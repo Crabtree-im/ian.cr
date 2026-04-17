@@ -1,0 +1,967 @@
+/* ============================================================
+   RESET & ROOT
+============================================================ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Star Wars */
+    --sw-black:   #080b12;
+    --sw-yellow:  #ffe81f;
+    --sw-blue:    #4fc3f7;
+    --sw-text:    #c5c6c7;
+
+    /* LEGO */
+    --lego-red:    #E3000B;
+    --lego-blue:   #006DB7;
+    --lego-yellow: #F5C518;
+    --lego-green:  #00A650;
+
+    /* WoW */
+    --wow-dark:   #0d0018;
+    --wow-purple: #1a0033;
+    --wow-gold:   #c7a84f;
+    --wow-gold-lt:#f0d080;
+    --wow-text:   #c8bfa8;
+
+    /* MTG */
+    --mtg-bg: #0e0e1a;
+
+    /* Minecraft */
+    --mc-bg:    #1a1a1a;
+    --mc-grass: #5D8A3C;
+
+    /* Fonts */
+    --f-sw:    'Cinzel', serif;
+    --f-pixel: 'Press Start 2P', monospace;
+    --f-wow:   'Metamorphous', cursive;
+    --f-body:  'Rajdhani', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--f-body);
+    background: var(--sw-black);
+    color: var(--sw-text);
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* ============================================================
+   NAVBAR
+============================================================ */
+.navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(8, 11, 18, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 232, 31, 0.15);
+    transition: border-color 0.3s;
+}
+
+.nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-logo {
+    font-family: var(--f-sw);
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--sw-yellow);
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 10px rgba(255,232,31,0.4);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--sw-text);
+    text-decoration: none;
+    font-family: var(--f-sw);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--sw-yellow); }
+
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: 1px solid rgba(255,232,31,0.4);
+    color: var(--sw-yellow);
+    font-size: 1.2rem;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+/* ============================================================
+   HERO — STAR WARS
+============================================================ */
+.hero-sw {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sw-black);
+    overflow: hidden;
+}
+
+#starfield {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem 1rem;
+    animation: fadeUp 1.2s ease both;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.sw-pre {
+    font-family: var(--f-sw);
+    font-size: 0.8rem;
+    color: var(--sw-yellow);
+    letter-spacing: 0.2em;
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.sw-name {
+    font-family: var(--f-sw);
+    font-size: clamp(2.2rem, 8vw, 5.5rem);
+    font-weight: 900;
+    color: var(--sw-yellow);
+    letter-spacing: 0.12em;
+    line-height: 1.1;
+    text-shadow:
+        0 0 30px rgba(255,232,31,0.5),
+        0 0 80px rgba(255,232,31,0.15);
+    margin-bottom: 1.25rem;
+}
+
+.lightsaber-divider {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+}
+
+.saber {
+    display: block;
+    height: 3px;
+    width: 220px;
+    border-radius: 2px;
+}
+
+.saber.blue {
+    background: linear-gradient(to right, transparent, var(--sw-blue), transparent);
+    box-shadow:
+        0 0 6px var(--sw-blue),
+        0 0 18px var(--sw-blue),
+        0 0 40px rgba(79,195,247,0.35);
+    animation: saberPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes saberPulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.6; }
+}
+
+.sw-role {
+    font-family: var(--f-sw);
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    color: var(--sw-blue);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.sw-tagline {
+    font-family: var(--f-body);
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--sw-text);
+    opacity: 0.85;
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+}
+
+.hero-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+}
+
+.contact-pill {
+    color: var(--sw-text);
+    text-decoration: none;
+    font-family: var(--f-sw);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid rgba(255,232,31,0.25);
+    border-radius: 20px;
+    transition: all 0.25s;
+}
+
+.contact-pill:hover,
+.contact-pill:focus {
+    border-color: var(--sw-yellow);
+    color: var(--sw-yellow);
+    box-shadow: 0 0 12px rgba(255,232,31,0.2);
+    outline: none;
+}
+
+.scroll-btn {
+    display: inline-block;
+    color: var(--sw-yellow);
+    text-decoration: none;
+    font-family: var(--f-sw);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    opacity: 0.8;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(7px); }
+}
+
+/* ============================================================
+   ABOUT — STAR WARS
+============================================================ */
+.about-sw {
+    background: linear-gradient(180deg, var(--sw-black) 0%, #0d1117 100%);
+    padding: 6rem 0;
+}
+
+.holo-panel {
+    max-width: 820px;
+    margin: 0 auto;
+    border: 1px solid rgba(79,195,247,0.25);
+    border-radius: 6px;
+    padding: 2.5rem 3rem;
+    background: rgba(79,195,247,0.03);
+    position: relative;
+}
+
+.holo-panel::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--sw-blue), transparent);
+}
+
+.section-heading {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: 1rem;
+}
+
+.sw-heading {
+    font-family: var(--f-sw);
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    color: var(--sw-blue);
+}
+
+.holo-rule {
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--sw-blue), transparent);
+    margin: 0 auto 2rem;
+}
+
+.about-body {
+    font-size: 1.15rem;
+    line-height: 1.85;
+    color: var(--sw-text);
+    text-align: center;
+    font-weight: 300;
+}
+
+/* ============================================================
+   EDUCATION — LEGO
+============================================================ */
+.education-lego {
+    background: #ececec;
+    padding: 6rem 0;
+    position: relative;
+}
+
+.education-lego::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 10px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--lego-red)    0px,  var(--lego-red)    80px,
+        var(--lego-blue)   80px, var(--lego-blue)   160px,
+        var(--lego-yellow) 160px,var(--lego-yellow) 240px,
+        var(--lego-green)  240px,var(--lego-green)  320px
+    );
+}
+
+.lego-heading {
+    font-family: var(--f-pixel);
+    font-size: clamp(0.8rem, 2.5vw, 1.3rem);
+    color: #222;
+    margin-bottom: 0.5rem;
+}
+
+.lego-sub {
+    text-align: center;
+    font-family: var(--f-body);
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 3rem;
+}
+
+.lego-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.25rem;
+}
+
+.lego-brick {
+    border-radius: 6px 6px 4px 4px;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: visible;
+}
+
+.lego-brick:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 0 rgba(0,0,0,0.3), 0 14px 24px rgba(0,0,0,0.2);
+}
+
+.lego-red    { background: var(--lego-red); }
+.lego-blue   { background: var(--lego-blue); }
+.lego-yellow { background: var(--lego-yellow); }
+
+.brick-studs {
+    display: flex;
+    gap: 10px;
+    padding: 8px 14px 0;
+}
+
+.brick-studs span {
+    display: block;
+    width: 22px;
+    height: 11px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.lego-red    .brick-studs span { background: #ff2424; box-shadow: inset 0 -2px 3px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.15); }
+.lego-blue   .brick-studs span { background: #1a8de0; box-shadow: inset 0 -2px 3px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.15); }
+.lego-yellow .brick-studs span { background: #ffd940; box-shadow: inset 0 -2px 3px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.15); }
+
+.brick-body { padding: 1rem 1.25rem 1.5rem; }
+
+.brick-school {
+    font-family: var(--f-pixel);
+    font-size: 0.52rem;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+}
+
+.lego-red   .brick-school,
+.lego-blue  .brick-school { color: #fff; }
+.lego-yellow .brick-school { color: #222; text-shadow: none; }
+
+.brick-degree {
+    font-family: var(--f-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+}
+
+.brick-meta {
+    font-family: var(--f-body);
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-bottom: 0.15rem;
+}
+
+.lego-red   .brick-degree,
+.lego-red   .brick-meta { color: rgba(255,255,255,0.9); }
+.lego-blue  .brick-degree,
+.lego-blue  .brick-meta { color: rgba(255,255,255,0.9); }
+.lego-yellow .brick-degree { color: #222; }
+.lego-yellow .brick-meta   { color: #555; }
+
+.brick-list {
+    list-style: none;
+    margin-top: 0.75rem;
+}
+
+.brick-list li {
+    font-family: var(--f-body);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    padding-left: 1rem;
+    position: relative;
+    margin-bottom: 0.3rem;
+}
+
+.brick-list li::before {
+    content: '▶';
+    position: absolute;
+    left: 0;
+    font-size: 0.45rem;
+    top: 0.35em;
+}
+
+.lego-red  .brick-list li,
+.lego-blue .brick-list li { color: rgba(255,255,255,0.88); }
+.lego-red  .brick-list li::before,
+.lego-blue .brick-list li::before { color: rgba(255,255,255,0.45); }
+
+.lego-yellow .brick-list li         { color: #333; }
+.lego-yellow .brick-list li::before { color: rgba(0,0,0,0.3); }
+
+/* ============================================================
+   EXPERIENCE — WORLD OF WARCRAFT
+============================================================ */
+.experience-wow {
+    background: linear-gradient(180deg, var(--wow-dark) 0%, var(--wow-purple) 50%, var(--wow-dark) 100%);
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.experience-wow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 10% 50%, rgba(138,43,226,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 50%, rgba(79,195,247,0.04) 0%, transparent 55%);
+    pointer-events: none;
+}
+
+.wow-header { text-align: center; margin-bottom: 3.5rem; }
+
+.wow-heading {
+    font-family: var(--f-wow);
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    color: var(--wow-gold);
+    text-shadow: 0 0 20px rgba(199,168,79,0.5), 2px 2px 4px rgba(0,0,0,0.9);
+    margin-bottom: 0.5rem;
+}
+
+.wow-sub {
+    font-family: var(--f-wow);
+    font-size: 0.9rem;
+    color: rgba(199,168,79,0.55);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+}
+
+.quest-log {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.quest-entry {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: rgba(13,0,24,0.75);
+    border: 1px solid rgba(199,168,79,0.25);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.quest-entry::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(to bottom, var(--wow-gold), transparent);
+    border-radius: 4px 0 0 4px;
+}
+
+.quest-entry:hover {
+    border-color: rgba(199,168,79,0.55);
+    box-shadow: 0 0 24px rgba(199,168,79,0.08);
+}
+
+.quest-badge {
+    flex-shrink: 0;
+    padding: 0.2rem 0.55rem;
+    border-radius: 3px;
+    font-family: var(--f-wow);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+}
+
+.quest-badge.done {
+    background: rgba(34,139,34,0.2);
+    border: 1px solid rgba(34,139,34,0.45);
+    color: #90ee90;
+}
+
+.quest-name {
+    font-family: var(--f-wow);
+    font-size: 1.1rem;
+    color: var(--wow-gold-lt);
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+}
+
+.quest-where {
+    font-family: var(--f-body);
+    font-size: 0.85rem;
+    color: rgba(199,168,79,0.55);
+    font-style: italic;
+    margin-bottom: 0.75rem;
+}
+
+.quest-obj { list-style: none; }
+
+.quest-obj li {
+    font-family: var(--f-body);
+    font-size: 0.97rem;
+    color: var(--wow-text);
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.35rem;
+    line-height: 1.5;
+}
+
+.quest-obj li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    font-size: 0.45rem;
+    top: 0.42em;
+    color: var(--wow-gold);
+}
+
+/* ============================================================
+   SKILLS — MAGIC: THE GATHERING
+============================================================ */
+.skills-mtg {
+    background: var(--mtg-bg);
+    padding: 6rem 0;
+    position: relative;
+}
+
+.skills-mtg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(26,86,219,0.07) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.mtg-heading {
+    font-family: var(--f-sw);
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    color: #d4af37;
+    text-shadow: 0 0 15px rgba(212,175,55,0.35);
+    margin-bottom: 0.5rem;
+}
+
+.mtg-sub {
+    text-align: center;
+    font-family: var(--f-body);
+    font-size: 1rem;
+    color: #777;
+    letter-spacing: 0.1em;
+    margin-bottom: 3.5rem;
+}
+
+.card-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    perspective: 1200px;
+}
+
+/* Base card */
+.mtg-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: transform 0.35s cubic-bezier(.25,.46,.45,.94), box-shadow 0.35s;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+}
+
+.mtg-card:hover {
+    transform: translateY(-10px) rotateY(4deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.c-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.55rem 0.8rem;
+    font-family: var(--f-sw);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.c-name { flex: 1; margin-right: 0.4rem; }
+
+.mana {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 900;
+    flex-shrink: 0;
+    font-family: var(--f-sw);
+}
+
+.m-blue  { background: #1a56db; color: #fff; box-shadow: 0 0 6px rgba(26,86,219,0.7); }
+.m-green { background: #2d6a4f; color: #fff; box-shadow: 0 0 6px rgba(45,106,79,0.7); }
+.m-red   { background: #c0392b; color: #fff; box-shadow: 0 0 6px rgba(192,57,43,0.7); }
+.m-white { background: #e8dcc0; color: #333; box-shadow: 0 0 6px rgba(232,220,192,0.7); }
+
+.c-art {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 6px;
+    border-radius: 4px;
+    font-size: 3rem;
+    border: 2px solid rgba(0,0,0,0.4);
+}
+
+.a-blue  { background: linear-gradient(135deg, #060e1c, #0e2954, #1a3a6e); }
+.a-green { background: linear-gradient(135deg, #061510, #0e2818, #1a4a2e); }
+.a-red   { background: linear-gradient(135deg, #1a0604, #3a0e08, #6e1a14); }
+.a-white { background: linear-gradient(135deg, #ddd4b8, #f0ead0, #f5f0e0); }
+
+.c-typeline {
+    font-family: var(--f-body);
+    font-size: 0.68rem;
+    font-style: italic;
+    margin: 4px 6px;
+    padding: 0.3rem 0.6rem;
+    border-top: 1px solid rgba(0,0,0,0.45);
+    border-bottom: 1px solid rgba(0,0,0,0.45);
+}
+
+.c-textbox {
+    padding: 0.65rem 0.8rem;
+    font-family: var(--f-body);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.c-textbox p { margin-bottom: 0.25rem; }
+.c-textbox p:last-child { margin-bottom: 0; }
+
+.c-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.4rem 0.8rem;
+    font-family: var(--f-sw);
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* Blue card */
+.c-blue { background: linear-gradient(180deg, #182444 0%, #0c1428 100%); border: 2px solid #4a7ad4; }
+.c-blue .c-header  { color: #a8c4f0; }
+.c-blue .c-typeline{ color: #8aacdc; background: rgba(26,86,219,0.06); }
+.c-blue .c-textbox { color: #c8daff; }
+.c-blue .c-footer  { color: #7aa8f0; border-top: 1px solid rgba(74,122,212,0.3); }
+
+/* Green card */
+.c-green { background: linear-gradient(180deg, #182a1e 0%, #0c1812 100%); border: 2px solid #4a8a5a; }
+.c-green .c-header  { color: #a0c8a8; }
+.c-green .c-typeline{ color: #82aa8a; background: rgba(45,106,79,0.06); }
+.c-green .c-textbox { color: #bcd8c4; }
+.c-green .c-footer  { color: #70a878; border-top: 1px solid rgba(74,138,90,0.3); }
+
+/* Red card */
+.c-red { background: linear-gradient(180deg, #2a1410 0%, #180c08 100%); border: 2px solid #c04840; }
+.c-red .c-header  { color: #f0a0a0; }
+.c-red .c-typeline{ color: #d08080; background: rgba(192,57,43,0.06); }
+.c-red .c-textbox { color: #f0c0b0; }
+.c-red .c-footer  { color: #e07070; border-top: 1px solid rgba(192,72,64,0.3); }
+
+/* White card */
+.c-white { background: linear-gradient(180deg, #e8e0cc 0%, #d4ccb4 100%); border: 2px solid #c8b890; }
+.c-white .c-header  { color: #333; }
+.c-white .c-name    { color: #1a1a1a; }
+.c-white .c-typeline{ color: #555; background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.15); }
+.c-white .c-textbox { color: #2a2a2a; }
+.c-white .c-footer  { color: #555; border-top: 1px solid rgba(0,0,0,0.15); }
+
+/* ============================================================
+   VOLUNTEER — MINECRAFT
+============================================================ */
+.volunteer-mc {
+    background: var(--mc-bg);
+    padding: 6rem 0;
+    position: relative;
+}
+
+.volunteer-mc::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 14px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--mc-grass) 0px,  var(--mc-grass) 28px,
+        #4a7a2f        28px, #4a7a2f        56px
+    );
+    image-rendering: pixelated;
+}
+
+.mc-heading {
+    font-family: var(--f-pixel);
+    font-size: clamp(0.75rem, 2.5vw, 1.15rem);
+    color: #fff;
+    text-shadow: 3px 3px 0 #000, -1px -1px 0 #000;
+    margin-bottom: 0.5rem;
+}
+
+.mc-sub {
+    text-align: center;
+    font-family: var(--f-pixel);
+    font-size: 0.5rem;
+    color: #aaa;
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+}
+
+/* Chest container — Minecraft UI style */
+.mc-chest {
+    max-width: 750px;
+    margin: 0 auto;
+    background: #c6c6c6;
+    border: 3px solid #555;
+    border-right-color: #ffffff;
+    border-bottom-color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mc-slot {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #8b8b8b;
+    border: 2px solid;
+    border-color: #373737 #ffffff #ffffff #373737;
+    padding: 0.75rem 1rem;
+    position: relative;
+    transition: background 0.12s;
+}
+
+.mc-slot:hover { background: #9e9e9e; }
+
+.mc-icon {
+    width: 52px;
+    height: 52px;
+    background: #000;
+    border: 2px solid;
+    border-color: #555 #aaa #aaa #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+}
+
+.mc-text { flex: 1; }
+
+.mc-name {
+    font-family: var(--f-pixel);
+    font-size: 0.58rem;
+    color: #fff;
+    text-shadow: 2px 2px 0 #3f3f3f;
+    margin-bottom: 0.3rem;
+    line-height: 1.5;
+}
+
+.mc-org {
+    font-family: var(--f-pixel);
+    font-size: 0.44rem;
+    color: #bbb;
+    margin-bottom: 0.2rem;
+}
+
+.mc-date {
+    font-family: var(--f-pixel);
+    font-size: 0.38rem;
+    color: #999;
+}
+
+.mc-rarity {
+    font-family: var(--f-pixel);
+    font-size: 0.4rem;
+    padding: 0.2rem 0.45rem;
+    flex-shrink: 0;
+    align-self: flex-end;
+}
+
+.r-uncommon { color: #55ff55; text-shadow: 1px 1px 0 #000; }
+.r-rare     { color: #5555ff; text-shadow: 1px 1px 0 #000; }
+
+/* ============================================================
+   FOOTER — STAR WARS
+============================================================ */
+.footer-sw {
+    background: var(--sw-black);
+    border-top: 1px solid rgba(255,232,31,0.15);
+    padding: 3.5rem 0 2rem;
+    text-align: center;
+}
+
+.footer-quote {
+    font-family: var(--f-sw);
+    font-size: 0.85rem;
+    color: var(--sw-yellow);
+    font-style: italic;
+    opacity: 0.8;
+    margin-bottom: 1.75rem;
+    letter-spacing: 0.05em;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.footer-links a {
+    color: var(--sw-text);
+    text-decoration: none;
+    font-family: var(--f-sw);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--sw-yellow); }
+.footer-sep { color: rgba(255,232,31,0.3); }
+
+.footer-copy {
+    font-family: var(--f-body);
+    font-size: 0.8rem;
+    color: rgba(197,198,199,0.35);
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: block; }
+    .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: rgba(8,11,18,0.97);
+        padding: 1rem 1.5rem 1.5rem;
+        border-bottom: 1px solid rgba(255,232,31,0.15);
+    }
+    .nav-links.open li a { padding: 0.5rem 0; display: block; font-size: 0.7rem; }
+
+    .holo-panel { padding: 1.75rem 1.5rem; }
+    .quest-entry { flex-direction: column; gap: 0.75rem; }
+    .card-table { grid-template-columns: 1fr 1fr; }
+    .mc-slot { flex-wrap: wrap; }
+}
+
+@media (max-width: 500px) {
+    .card-table { grid-template-columns: 1fr; }
+    .lego-grid  { grid-template-columns: 1fr; }
+    .hero-contact { flex-direction: column; align-items: center; }
+}
+
+/* ============================================================
+   SCROLL-IN ANIMATIONS
+============================================================ */
+.fade-in {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.lego-brick.fade-in:nth-child(2) { transition-delay: 0.1s; }
+.lego-brick.fade-in:nth-child(3) { transition-delay: 0.2s; }
+
+.mtg-card.fade-in:nth-child(2) { transition-delay: 0.1s; }
+.mtg-card.fade-in:nth-child(3) { transition-delay: 0.2s; }
+.mtg-card.fade-in:nth-child(4) { transition-delay: 0.3s; }
+
+.quest-entry.fade-in:nth-child(2) { transition-delay: 0.08s; }
+.quest-entry.fade-in:nth-child(3) { transition-delay: 0.16s; }
+.quest-entry.fade-in:nth-child(4) { transition-delay: 0.24s; }
+.quest-entry.fade-in:nth-child(5) { transition-delay: 0.32s; }
+
+.mc-slot.fade-in:nth-child(2) { transition-delay: 0.1s; }
+.mc-slot.fade-in:nth-child(3) { transition-delay: 0.2s; }
