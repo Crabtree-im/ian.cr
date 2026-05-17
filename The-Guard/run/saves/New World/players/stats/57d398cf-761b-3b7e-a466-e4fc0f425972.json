@@ -1,0 +1,36 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:pillager_spawn_egg": 168,
+      "minecraft:vindicator_spawn_egg": 154,
+      "minecraft:netherite_sword": 22,
+      "village-guard:guard_spawn_egg": 307,
+      "minecraft:ravager_spawn_egg": 43
+    },
+    "minecraft:picked_up": {
+      "minecraft:wooden_axe": 1,
+      "minecraft:golden_leggings": 1,
+      "minecraft:saddle": 2,
+      "minecraft:leather_chestplate": 1,
+      "minecraft:leather_leggings": 1
+    },
+    "minecraft:killed": {
+      "village-guard:guard": 11
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 615,
+      "minecraft:time_since_rest": 11084,
+      "minecraft:walk_one_cm": 7994,
+      "minecraft:total_world_time": 11141,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 160147,
+      "minecraft:mob_kills": 12,
+      "minecraft:sneak_time": 357,
+      "minecraft:play_time": 11084,
+      "minecraft:damage_dealt": 1871,
+      "minecraft:jump": 43,
+      "minecraft:time_since_death": 11084
+    }
+  },
+  "DataVersion": 4790
+}

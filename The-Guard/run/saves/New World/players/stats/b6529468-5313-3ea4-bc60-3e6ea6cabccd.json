@@ -1,0 +1,19 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "village-guard:guard_banner": 3
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 1212,
+      "minecraft:walk_one_cm": 1736,
+      "minecraft:total_world_time": 1228,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 12586,
+      "minecraft:play_time": 1212,
+      "minecraft:damage_dealt": 7,
+      "minecraft:jump": 6,
+      "minecraft:time_since_death": 1212
+    }
+  },
+  "DataVersion": 4790
+}

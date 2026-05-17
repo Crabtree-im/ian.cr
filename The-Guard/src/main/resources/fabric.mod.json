@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "village-guard",
+	"version": "${version}",
+	"name": "Village Guard",
+	"description": "Adds Guard mobs that protect villages from hostile mobs and players who attack villagers.",
+	"authors": [
+		"icrabtree"
+	],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.icrabtree.villageguard.VillageGuard"
+		],
+		"client": [
+			"dev.icrabtree.villageguard.client.VillageGuardClient"
+		]
+	},
+	"mixins": [
+		"village-guard.mixins.json",
+		{
+			"config": "village-guard.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.2",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

@@ -1,0 +1,44 @@
+/locate structure minecraft:village_plains
+/tp @s -1376 ~ 656
+/give @p minecraft:villager_spawn_egg
+/give @p village-guard:guard_spawn_egg
+/gamerule spawn_mobs true
+/gamemode creative
+/difficulty easy
+/tick freeze
+/tick unfreeze
+/tick freeze
+/tick unfreeze
+/time set minecraft:day
+/clear @a
+/give @a village-guard:guard_spawn_egg
+/time set minecraft:day
+/clear
+/gamerule advance_time false
+/clear
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/tick freeze
+/tick unfreeze
+/tick freeze
+/tick unfreeze
+/gamemode survival
+/gamemode creative
+/tick freeze
+/seed
+/teleport -1056 90 336
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/tick freeze
+/tick unfreeze
+/gamemode survival
+/gamemode creative
+/gamemode survival

@@ -1,0 +1,23 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 10,
+      "minecraft:time_since_rest": 1228,
+      "minecraft:walk_one_cm": 2531,
+      "minecraft:total_world_time": 1258,
+      "minecraft:leave_game": 1,
+      "minecraft:mob_kills": 1,
+      "minecraft:play_time": 1228,
+      "minecraft:damage_dealt": 204,
+      "minecraft:jump": 21,
+      "minecraft:time_since_death": 1228
+    },
+    "minecraft:used": {
+      "village-guard:guard_spawn_egg": 1
+    },
+    "minecraft:killed": {
+      "village-guard:guard": 1
+    }
+  },
+  "DataVersion": 4790
+}

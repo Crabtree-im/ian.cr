@@ -1,0 +1,31 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:brown_banner": 4,
+      "village-guard:guard_banner": 6,
+      "minecraft:netherite_axe": 1
+    },
+    "minecraft:crafted": {
+      "village-guard:guard_banner": 4
+    },
+    "minecraft:picked_up": {
+      "village-guard:guard_banner": 1,
+      "minecraft:melon_seeds": 1
+    },
+    "minecraft:custom": {
+      "minecraft:interact_with_crafting_table": 1,
+      "minecraft:time_since_rest": 1213,
+      "minecraft:walk_one_cm": 2961,
+      "minecraft:total_world_time": 1233,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 1213,
+      "minecraft:damage_dealt": 7,
+      "minecraft:jump": 1,
+      "minecraft:time_since_death": 1213
+    },
+    "minecraft:mined": {
+      "minecraft:white_banner": 1
+    }
+  },
+  "DataVersion": 4790
+}

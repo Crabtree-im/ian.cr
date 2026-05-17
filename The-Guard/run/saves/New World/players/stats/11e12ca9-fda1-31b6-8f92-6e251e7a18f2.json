@@ -1,0 +1,38 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:interact_with_crafting_table": 3,
+      "minecraft:time_since_rest": 7125,
+      "minecraft:walk_one_cm": 8619,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 7125,
+      "minecraft:damage_dealt": 58,
+      "minecraft:jump": 15,
+      "minecraft:time_since_death": 7125,
+      "minecraft:sprint_one_cm": 1530,
+      "minecraft:total_world_time": 7207,
+      "minecraft:fly_one_cm": 2951,
+      "minecraft:interact_with_anvil": 1,
+      "minecraft:sneak_time": 14
+    },
+    "minecraft:picked_up": {
+      "minecraft:white_banner": 3,
+      "minecraft:brown_egg": 1
+    },
+    "minecraft:used": {
+      "minecraft:villager_spawn_egg": 4,
+      "minecraft:crafting_table": 1,
+      "minecraft:anvil": 1,
+      "village-guard:guard_spawn_egg": 2,
+      "village-guard:guard_banner": 12,
+      "minecraft:netherite_axe": 1
+    },
+    "minecraft:mined": {
+      "minecraft:white_banner": 3
+    },
+    "minecraft:crafted": {
+      "village-guard:guard_banner": 3
+    }
+  },
+  "DataVersion": 4790
+}

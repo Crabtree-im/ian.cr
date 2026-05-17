@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "village-guard:guard_banner": 22
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 1164,
+      "minecraft:time_since_rest": 2777,
+      "minecraft:walk_one_cm": 7457,
+      "minecraft:total_world_time": 2804,
+      "minecraft:leave_game": 2,
+      "minecraft:fly_one_cm": 5968,
+      "minecraft:play_time": 2777,
+      "minecraft:damage_dealt": 67,
+      "minecraft:jump": 24,
+      "minecraft:time_since_death": 2777,
+      "minecraft:drop": 4
+    },
+    "minecraft:dropped": {
+      "minecraft:wheat_seeds": 2,
+      "minecraft:iron_leggings": 1,
+      "minecraft:netherite_axe": 1
+    }
+  },
+  "DataVersion": 4790
+}

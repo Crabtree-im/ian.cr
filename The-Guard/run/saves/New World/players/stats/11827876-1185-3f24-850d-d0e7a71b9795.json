@@ -1,0 +1,39 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:pillager_spawn_egg": 58,
+      "minecraft:spider_spawn_egg": 5,
+      "minecraft:horse_spawn_egg": 2,
+      "minecraft:pig_spawn_egg": 1,
+      "village-guard:guard_spawn_egg": 198,
+      "minecraft:bogged_spawn_egg": 1,
+      "minecraft:evoker_spawn_egg": 26,
+      "minecraft:creeper_spawn_egg": 1,
+      "minecraft:vindicator_spawn_egg": 44,
+      "minecraft:breeze_spawn_egg": 1,
+      "minecraft:light_gray_bed": 1,
+      "minecraft:zombie_horse_spawn_egg": 1,
+      "minecraft:cave_spider_spawn_egg": 1,
+      "minecraft:zombie_spawn_egg": 1,
+      "minecraft:zombie_villager_spawn_egg": 9,
+      "minecraft:ravager_spawn_egg": 29,
+      "minecraft:skeleton_spawn_egg": 1
+    },
+    "minecraft:picked_up": {
+      "minecraft:saddle": 2
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 483,
+      "minecraft:time_since_rest": 12359,
+      "minecraft:walk_one_cm": 7213,
+      "minecraft:total_world_time": 12429,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 73055,
+      "minecraft:sneak_time": 182,
+      "minecraft:play_time": 12359,
+      "minecraft:jump": 18,
+      "minecraft:time_since_death": 12359
+    }
+  },
+  "DataVersion": 4790
+}

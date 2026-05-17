@@ -1,0 +1,6 @@
+{
+	"required": true,
+	"package": "dev.icrabtree.villageguard.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": []
+}

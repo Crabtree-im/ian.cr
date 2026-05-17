@@ -1,0 +1,87 @@
+{
+  "stats": {
+    "minecraft:picked_up": {
+      "minecraft:chainmail_leggings": 2,
+      "minecraft:golden_boots": 3,
+      "minecraft:netherite_boots": 4,
+      "minecraft:iron_boots": 1,
+      "minecraft:wooden_axe": 1,
+      "minecraft:iron_sword": 1,
+      "minecraft:wheat_seeds": 1,
+      "minecraft:white_banner": 8,
+      "minecraft:leather_leggings": 5,
+      "minecraft:chainmail_chestplate": 2,
+      "minecraft:golden_axe": 1,
+      "village-guard:guard_banner": 5,
+      "minecraft:wooden_sword": 6,
+      "minecraft:chainmail_helmet": 2,
+      "minecraft:leather_chestplate": 2,
+      "minecraft:golden_chestplate": 3,
+      "minecraft:netherite_chestplate": 3,
+      "minecraft:bow": 1,
+      "minecraft:chainmail_boots": 1,
+      "minecraft:crossbow": 1,
+      "minecraft:golden_sword": 2,
+      "minecraft:stone_sword": 2,
+      "minecraft:leather_boots": 6,
+      "minecraft:golden_leggings": 3,
+      "minecraft:netherite_leggings": 4,
+      "minecraft:leather_helmet": 6,
+      "minecraft:netherite_helmet": 2,
+      "minecraft:iron_helmet": 2,
+      "minecraft:iron_chestplate": 1
+    },
+    "minecraft:killed": {
+      "village-guard:guard": 1
+    },
+    "minecraft:mined": {
+      "minecraft:short_grass": 2,
+      "minecraft:white_wall_banner": 1,
+      "minecraft:white_banner": 12
+    },
+    "minecraft:custom": {
+      "minecraft:interact_with_crafting_table": 2,
+      "minecraft:talked_to_villager": 5,
+      "minecraft:time_since_rest": 10745,
+      "minecraft:walk_one_cm": 27858,
+      "minecraft:leave_game": 2,
+      "minecraft:mob_kills": 1,
+      "minecraft:damage_taken": 60,
+      "minecraft:play_time": 10745,
+      "minecraft:damage_dealt": 418,
+      "minecraft:jump": 38,
+      "minecraft:time_since_death": 10745,
+      "minecraft:drop": 54,
+      "minecraft:sprint_one_cm": 1632,
+      "minecraft:open_chest": 1,
+      "minecraft:fall_one_cm": 556,
+      "minecraft:total_world_time": 10787,
+      "minecraft:fly_one_cm": 5309,
+      "minecraft:sneak_time": 9
+    },
+    "minecraft:dropped": {
+      "minecraft:netherite_sword": 4,
+      "minecraft:netherite_boots": 13,
+      "minecraft:netherite_helmet": 11,
+      "minecraft:netherite_leggings": 13,
+      "minecraft:netherite_axe": 1,
+      "minecraft:netherite_chestplate": 12
+    },
+    "minecraft:used": {
+      "minecraft:warden_spawn_egg": 1,
+      "minecraft:villager_spawn_egg": 1,
+      "minecraft:splash_potion": 19,
+      "minecraft:poppy": 1,
+      "village-guard:guard_spawn_egg": 32,
+      "village-guard:guard_banner": 8,
+      "minecraft:goat_horn": 1,
+      "minecraft:white_banner": 6,
+      "minecraft:netherite_axe": 18,
+      "minecraft:bread": 1
+    },
+    "minecraft:crafted": {
+      "village-guard:guard_banner": 1
+    }
+  },
+  "DataVersion": 4790
+}

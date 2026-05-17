@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TOP SECRET // Mission Control Simulation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="dropOverlay" class="drop-overlay" aria-hidden="true">
+      <div class="drop-card">
+        <p class="drop-title">DROP AUDIO FILE</p>
+        <p class="drop-subtitle">Drag onto a target to replace sounds live</p>
+        <div class="drop-targets">
+          <div class="drop-target" data-drop-target="ambient">AMBIENT TRACK</div>
+          <div class="drop-target" data-drop-target="beep">BEEP CLIP</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="bootOverlay" class="boot-overlay">
+      <div class="boot-card">
+        <p class="label">TOP SECRET // FICTIONAL MOVIE UI</p>
+        <h1>MISSION CONTROL SIMULATION</h1>
+        <p>This interface is visual-only and does not perform real operations.</p>
+        <div class="boot-actions">
+          <button id="engageBtn">ENGAGE SYSTEM</button>
+          <button id="muteBtn">SOUND: ON</button>
+        </div>
+        <p class="hint">Tip: Press F to toggle fullscreen. Press ESC to exit fullscreen.</p>
+      </div>
+    </div>
+
+    <div class="app" id="app">
+      <header class="top-bar">
+        <div>
+          <p class="title">IMF SHADOW GRID</p>
+          <p class="subtitle">CINEMATIC INTERFACE // FICTIONAL DEMO</p>
+        </div>
+        <div class="hud-right">
+          <div class="status-wrap">
+            <div class="status-pill pulse">LINK SECURE</div>
+            <div class="status-pill amber" id="clock">00:00:00 UTC</div>
+            <div class="status-pill red">ALERT LEVEL: OMEGA</div>
+            <button id="sceneSwitchBtn" class="status-pill action" type="button">SCENE: HACK MODE</button>
+          </div>
+
+          <div class="sound-rack">
+            <label for="soundProfile">AUDIO PROFILE</label>
+            <select id="soundProfile">
+              <option value="stealth">STEALTH HUM</option>
+              <option value="cinematic">CINEMATIC DRONE</option>
+              <option value="retro">RETRO TERMINAL</option>
+            </select>
+
+            <label for="masterVolume">VOLUME</label>
+            <input id="masterVolume" type="range" min="0" max="100" value="45" />
+
+            <div class="sound-toggles">
+              <label><input id="layerHum" type="checkbox" checked /> HUM</label>
+              <label><input id="layerDrone" type="checkbox" checked /> DRONE</label>
+              <label><input id="layerBeeps" type="checkbox" checked /> BEEPS</label>
+            </div>
+
+            <label for="customAmbientFile">CUSTOM AMBIENT</label>
+            <input id="customAmbientFile" type="file" accept="audio/*" />
+
+            <label for="customBeepFile">CUSTOM BEEP</label>
+            <input id="customBeepFile" type="file" accept="audio/*" />
+
+            <div class="sound-note" id="soundFileStatus">
+              No custom files loaded.
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="panel radar-panel">
+          <div class="panel-head">TACTICAL RADAR</div>
+          <canvas id="radarCanvas"></canvas>
+        </section>
+
+        <section class="panel graph-panel">
+          <div class="panel-head">NETWORK TOPOLOGY</div>
+          <canvas id="graphCanvas"></canvas>
+        </section>
+
+        <section class="panel feed-panel">
+          <div class="panel-head">LIVE SIGNAL FEED</div>
+          <div id="feed" class="feed"></div>
+        </section>
+
+        <section class="panel bars-panel">
+          <div class="panel-head">MISSION METRICS</div>
+          <canvas id="barsCanvas"></canvas>
+        </section>
+
+        <section class="panel line-panel">
+          <div class="panel-head">THREAT TREND</div>
+          <canvas id="lineCanvas"></canvas>
+        </section>
+
+        <section class="panel map-panel">
+          <div class="panel-head">GLOBAL OVERLAY</div>
+          <canvas id="mapCanvas"></canvas>
+        </section>
+      </main>
+    </div>
+
+    <div id="hackScreen" class="hack-screen hidden" aria-hidden="true">
+      <div class="hack-top">
+        <p id="hackTitle" class="hack-title">BLACKSITE TERMINAL // FICTIONAL VISUALS</p>
+        <div class="hack-actions">
+          <div id="hackPresetBadge" class="status-pill amber">SCENE: BREACH</div>
+          <button id="cycleSceneBtn" type="button">NEXT SCENE</button>
+          <button id="backToHudBtn" type="button">RETURN TO HUD</button>
+        </div>
+      </div>
+
+      <div class="hack-layout">
+        <section class="hack-panel matrix-panel">
+          <div id="matrixPanelHead" class="panel-head">NEURAL STREAM</div>
+          <canvas id="matrixCanvas"></canvas>
+        </section>
+
+        <section class="hack-panel terminal-panel">
+          <div id="terminalPanelHead" class="panel-head">INJECTION TERMINAL</div>
+          <div id="typeStream" class="type-stream"></div>
+          <div id="hackHint" class="hack-hint">Type on your keyboard to trigger fast fake command bursts. Press J for next scene.</div>
+        </section>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

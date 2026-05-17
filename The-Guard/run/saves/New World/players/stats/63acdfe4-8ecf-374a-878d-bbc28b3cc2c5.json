@@ -1,0 +1,18 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:villager_spawn_egg": 3,
+      "village-guard:guard_spawn_egg": 7
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 7362,
+      "minecraft:walk_one_cm": 9353,
+      "minecraft:total_world_time": 10053,
+      "minecraft:leave_game": 1,
+      "minecraft:play_time": 7362,
+      "minecraft:jump": 4,
+      "minecraft:time_since_death": 7362
+    }
+  },
+  "DataVersion": 4790
+}

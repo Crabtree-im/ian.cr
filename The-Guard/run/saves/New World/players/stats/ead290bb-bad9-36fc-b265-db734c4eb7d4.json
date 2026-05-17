@@ -1,0 +1,22 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:pillager_spawn_egg": 2,
+      "village-guard:guard_spawn_egg": 1,
+      "village-guard:guard_banner": 7
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 466,
+      "minecraft:time_since_rest": 2106,
+      "minecraft:walk_one_cm": 7437,
+      "minecraft:total_world_time": 2127,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 2692,
+      "minecraft:play_time": 2106,
+      "minecraft:damage_dealt": 8,
+      "minecraft:jump": 10,
+      "minecraft:time_since_death": 2106
+    }
+  },
+  "DataVersion": 4790
+}

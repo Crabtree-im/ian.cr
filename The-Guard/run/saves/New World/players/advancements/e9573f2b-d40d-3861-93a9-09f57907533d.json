@@ -1,0 +1,29 @@
+{
+  "minecraft:recipes/decorations/crafting_table": {
+    "criteria": {
+      "unlock_right_away": "2026-04-29 11:59:15 -0600"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/target": {
+    "criteria": {
+      "has_hay_block": "2026-04-29 12:01:51 -0600"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "minecraft:forest": "2026-04-29 11:59:16 -0600",
+      "minecraft:mangrove_swamp": "2026-04-29 12:01:23 -0600",
+      "minecraft:plains": "2026-04-29 11:59:46 -0600"
+    },
+    "done": false
+  },
+  "minecraft:recipes/misc/wheat": {
+    "criteria": {
+      "has_hay_block": "2026-04-29 12:01:51 -0600"
+    },
+    "done": true
+  },
+  "DataVersion": 4790
+}

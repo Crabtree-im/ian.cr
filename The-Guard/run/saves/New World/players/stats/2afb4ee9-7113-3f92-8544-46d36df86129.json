@@ -1,0 +1,29 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "village-guard:guard_banner": 2
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 3204,
+      "minecraft:walk_one_cm": 2981,
+      "minecraft:leave_game": 1,
+      "minecraft:mob_kills": 1,
+      "minecraft:play_time": 3204,
+      "minecraft:damage_dealt": 113,
+      "minecraft:jump": 7,
+      "minecraft:time_since_death": 3204,
+      "minecraft:sprint_one_cm": 60,
+      "minecraft:total_world_time": 4442,
+      "minecraft:fly_one_cm": 41582,
+      "minecraft:walk_on_water_one_cm": 269,
+      "minecraft:sneak_time": 77
+    },
+    "minecraft:killed": {
+      "village-guard:guard": 1
+    },
+    "minecraft:picked_up": {
+      "minecraft:wheat_seeds": 2
+    }
+  },
+  "DataVersion": 4790
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "village-guard:item/guard_banner",
+    "layer1": "village-guard:item/guard_banner_glint_overlay"
+  }
+}

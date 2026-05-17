@@ -1,0 +1,27 @@
+{
+  "stats": {
+    "minecraft:killed": {
+      "village-guard:guard": 1
+    },
+    "minecraft:used": {
+      "minecraft:carrot": 2,
+      "minecraft:golden_sword": 8,
+      "village-guard:guard_spawn_egg": 5
+    },
+    "minecraft:custom": {
+      "minecraft:sprint_one_cm": 2279,
+      "minecraft:time_since_rest": 2081,
+      "minecraft:walk_one_cm": 7943,
+      "minecraft:total_world_time": 2185,
+      "minecraft:leave_game": 1,
+      "minecraft:fly_one_cm": 4048,
+      "minecraft:mob_kills": 1,
+      "minecraft:walk_on_water_one_cm": 52,
+      "minecraft:play_time": 2081,
+      "minecraft:damage_dealt": 200,
+      "minecraft:jump": 17,
+      "minecraft:time_since_death": 2081
+    }
+  },
+  "DataVersion": 4790
+}
