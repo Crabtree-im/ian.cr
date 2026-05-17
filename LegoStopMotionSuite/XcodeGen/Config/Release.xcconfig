@@ -1,0 +1,4 @@
+#include "Common.xcconfig"
+SWIFT_OPTIMIZATION_LEVEL = -O
+DEAD_CODE_STRIPPING = YES
+SWIFT_COMPILATION_MODE = wholemodule
