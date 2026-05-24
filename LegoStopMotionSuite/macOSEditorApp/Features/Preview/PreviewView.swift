@@ -4,6 +4,7 @@ import SwiftUI
 struct PreviewView: View {
     let currentImage: NSImage?
     let isPlaying: Bool
+    let canPlay: Bool
     let togglePlayback: () -> Void
 
     var body: some View {
@@ -27,6 +28,7 @@ struct PreviewView: View {
                 togglePlayback()
             }
             .buttonStyle(.borderedProminent)
+            .disabled(!canPlay)
         }
     }
 }

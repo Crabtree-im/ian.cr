@@ -41,7 +41,9 @@ Included permissions and capabilities are configured in:
 
 - iOS onion-skin overlay with adjustable opacity during capture.
 - iOS AirDrop fallback via `ShareLink` for any prepared batch zip.
+- iOS `New Take` action to reset a capture batch quickly between scenes.
 - macOS manual zip import (`Import Zip...`) for AirDrop-received files.
+- macOS receiver start/stop control to manage transfer session lifecycle.
 
 ## Data Flow
 

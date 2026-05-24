@@ -63,6 +63,8 @@ targets:
     type: bundle.unit-test
     platform: macOS
     deploymentTarget: 14.0
+    info:
+      path: Plists/EditorAppTests-Info.plist
     sources:
       - path: ../Tests/macOSEditorAppTests
     dependencies:

@@ -1,5 +1,6 @@
 import Foundation
 import MultipeerConnectivity
+import UIKit
 
 final class MPCTransferService: NSObject {
     enum Mode {
@@ -40,7 +41,7 @@ final class MPCTransferService: NSObject {
 
     init(mode: Mode) {
         self.mode = mode
-        self.peerID = MCPeerID(displayName: Host.current().localizedName ?? UUID().uuidString)
+        self.peerID = MCPeerID(displayName: UIDevice.current.name)
         super.init()
     }
 
@@ -104,8 +105,10 @@ final class MPCTransferService: NSObject {
                 }
             }
 
-            observation = progress.observe(\Progress.fractionCompleted, options: [.initial, .new]) { [weak self] progress, _ in
-                self?.onSendProgress?(progress.fractionCompleted)
+            if let progress {
+                observation = progress.observe(\Progress.fractionCompleted, options: [.initial, .new]) { [weak self] progress, _ in
+                    self?.onSendProgress?(progress.fractionCompleted)
+                }
             }
         }
     }

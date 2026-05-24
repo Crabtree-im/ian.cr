@@ -23,6 +23,10 @@ final class CaptureViewModel: ObservableObject {
         frameCount >= maxFrames
     }
 
+    var canUpload: Bool {
+        frameCount > 0 && !isBusy && isPeerConnected
+    }
+
     let cameraService = CameraService()
     private let storageService = PhotoStorageService()
     private let packager = BatchPackager()
@@ -165,6 +169,31 @@ final class CaptureViewModel: ObservableObject {
             present(error)
             transferStatusText = "Upload failed"
             canRetryUpload = true
+        }
+    }
+
+    func startNewTake() async {
+        guard !isBusy else { return }
+
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            if let batchURL {
+                try storageService.deleteBatchFolder(batchURL)
+            }
+
+            let newBatchURL = try storageService.createBatchFolder()
+            batchURL = newBatchURL
+            frameCount = 0
+            onionSkinImage = nil
+            latestArchiveURL = nil
+            lastFailedArchiveURL = nil
+            transferProgress = 0
+            transferStatusText = "Idle"
+            canRetryUpload = false
+        } catch {
+            present(error)
         }
     }
 

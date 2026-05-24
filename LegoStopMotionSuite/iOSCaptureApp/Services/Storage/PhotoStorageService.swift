@@ -34,6 +34,13 @@ struct PhotoStorageService {
         return name
     }
 
+    func deleteBatchFolder(_ batchURL: URL) throws {
+        let fm = FileManager.default
+        if fm.fileExists(atPath: batchURL.path) {
+            try fm.removeItem(at: batchURL)
+        }
+    }
+
     private func appSupportRoot() throws -> URL {
         let base = try FileManager.default.url(
             for: .applicationSupportDirectory,

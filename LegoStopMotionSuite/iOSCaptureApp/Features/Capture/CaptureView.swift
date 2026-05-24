@@ -46,7 +46,7 @@ struct CaptureView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
-                    .disabled(viewModel.frameCount == 0 || viewModel.isBusy || !viewModel.isPeerConnected)
+                    .disabled(!viewModel.canUpload)
 
                     if let archiveURL = viewModel.latestArchiveURL {
                         ShareLink(item: archiveURL) {
@@ -61,6 +61,16 @@ struct CaptureView: View {
                             .buttonStyle(.bordered)
                             .disabled(true)
                     }
+                }
+
+                HStack {
+                    Button("New Take") {
+                        Task { await viewModel.startNewTake() }
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.frameCount == 0 || viewModel.isBusy)
+
+                    Spacer()
                 }
 
                 HStack(spacing: 10) {

@@ -6,9 +6,10 @@ struct EditorRootView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Button("Start Receiver") {
-                    viewModel.startReceiver()
+                Button(viewModel.isReceiverRunning ? "Stop Receiver" : "Start Receiver") {
+                    viewModel.toggleReceiver()
                 }
+                .buttonStyle(.borderedProminent)
 
                 Button("Export .mov") {
                     Task { await viewModel.exportMovie() }
@@ -52,7 +53,11 @@ struct EditorRootView: View {
             TimelineView(vm: viewModel.timelineVM, imageProvider: viewModel.imageForFrame)
                 .frame(height: 210)
 
-            PreviewView(currentImage: viewModel.currentPreviewImage, isPlaying: viewModel.isPlaying) {
+            PreviewView(
+                currentImage: viewModel.currentPreviewImage,
+                isPlaying: viewModel.isPlaying,
+                canPlay: !viewModel.timelineVM.frames.isEmpty
+            ) {
                 viewModel.togglePlayback()
             }
             .frame(minHeight: 300)
@@ -60,6 +65,9 @@ struct EditorRootView: View {
         }
         .task {
             viewModel.prepareProjectRoot()
+        }
+        .onDisappear {
+            viewModel.stopAllBackgroundWork()
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}

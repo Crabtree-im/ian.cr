@@ -14,6 +14,7 @@ final class EditorViewModel: ObservableObject {
     @Published var receiveProgress: Double = 0
     @Published var receiveStatusText = "Idle"
     @Published var canRetryImport = false
+    @Published var isReceiverRunning = false
 
     let timelineVM = TimelineViewModel()
 
@@ -61,8 +62,27 @@ final class EditorViewModel: ObservableObject {
     }
 
     func startReceiver() {
+        guard !isReceiverRunning else { return }
         receiver.start()
+        isReceiverRunning = true
         connectionStatus = "Advertising for capture app"
+    }
+
+    func stopReceiver() {
+        guard isReceiverRunning else { return }
+        receiver.stop()
+        isReceiverRunning = false
+        receiveProgress = 0
+        receiveStatusText = "Idle"
+        connectionStatus = "Receiver stopped"
+    }
+
+    func toggleReceiver() {
+        if isReceiverRunning {
+            stopReceiver()
+        } else {
+            startReceiver()
+        }
     }
 
     func imageForFrame(_ fileName: String) -> NSImage? {
@@ -73,6 +93,7 @@ final class EditorViewModel: ObservableObject {
     }
 
     func togglePlayback() {
+        guard !importedFrameURLs.isEmpty else { return }
         isPlaying.toggle()
         if isPlaying {
             startPlaybackLoop()
@@ -80,6 +101,13 @@ final class EditorViewModel: ObservableObject {
             playbackTask?.cancel()
             playbackTask = nil
         }
+    }
+
+    func stopAllBackgroundWork() {
+        playbackTask?.cancel()
+        playbackTask = nil
+        isPlaying = false
+        stopReceiver()
     }
 
     func exportMovie() async {
