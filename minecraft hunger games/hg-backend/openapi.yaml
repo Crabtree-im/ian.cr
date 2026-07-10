@@ -19,29 +19,39 @@ paths:
           description: Application created
     get:
       summary: List applications (admin)
+      security:
+        - AdminApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/AdminRoleHeader'
       responses:
         '200':
           description: Applications list
   /applications/{id}:
     get:
       summary: Get a single application
+      security:
+        - AdminApiKey: []
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: integer
+        - $ref: '#/components/parameters/AdminRoleHeader'
       responses:
         '200':
           description: Application detail
     patch:
       summary: Update application state (admin)
+      security:
+        - AdminApiKey: []
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: integer
+        - $ref: '#/components/parameters/AdminRoleHeader'
       requestBody:
         required: true
         content:
@@ -66,12 +76,15 @@ paths:
   /payments/{id}/status:
     patch:
       summary: Set payment status (admin)
+      security:
+        - AdminApiKey: []
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: integer
+        - $ref: '#/components/parameters/AdminRoleHeader'
       requestBody:
         required: true
         content:
@@ -81,6 +94,22 @@ paths:
       responses:
         '200':
           description: Payment status updated
+  /admin/events:
+    post:
+      summary: Create or update event record (admin)
+      security:
+        - AdminApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/AdminRoleHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        '201':
+          description: Event upserted
   /players/status/{gamertag}:
     get:
       summary: Public status check by gamertag
@@ -94,6 +123,19 @@ paths:
         '200':
           description: Player status response
 components:
+  securitySchemes:
+    AdminApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+  parameters:
+    AdminRoleHeader:
+      in: header
+      name: x-admin-role
+      required: true
+      schema:
+        type: string
+        enum: [admin, moderator]
   schemas:
     CreateApplicationRequest:
       type: object
@@ -141,3 +183,17 @@ components:
           enum: [pending, accepted]
         verifiedBy:
           type: string
+    CreateEventRequest:
+      type: object
+      required: [code, name]
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        state:
+          type: string
+          default: planned
+        startsAt:
+          type: string
+          format: date-time

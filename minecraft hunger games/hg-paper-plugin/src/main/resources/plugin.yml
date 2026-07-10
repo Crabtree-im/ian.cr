@@ -7,7 +7,7 @@ description: Server-authoritative Hunger Games event plugin.
 commands:
   hg:
     description: Hunger Games admin command.
-    usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|givechest>
+    usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|givechest>
     permission: hg.admin.status
 permissions:
   hg.admin.start:

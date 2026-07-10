@@ -119,19 +119,18 @@ public final class LootService {
             }
         }
 
-        for (int i = 0; i < toFill && !freeSlots.isEmpty(); i++) {
+        // Guarantee one combat-oriented entry and one food entry when available.
+        int guaranteedPlaced = 0;
+        guaranteedPlaced += placeGuaranteed(inventory, freeSlots, table, "weapons_tools", "armor");
+        guaranteedPlaced += placeGuaranteed(inventory, freeSlots, table, "food");
+
+        int randomFillCount = Math.max(0, toFill - guaranteedPlaced);
+        for (int i = 0; i < randomFillCount && !freeSlots.isEmpty(); i++) {
             LootEntry entry = pickWeighted(table.getEntries());
             if (entry == null) {
                 break;
             }
-            int amount = entry.min();
-            if (entry.max() > entry.min()) {
-                amount += random.nextInt(entry.max() - entry.min() + 1);
-            }
-            ItemStack item = new ItemStack(entry.material(), amount);
-            int slotIndex = random.nextInt(freeSlots.size());
-            int slot = freeSlots.remove(slotIndex);
-            inventory.setItem(slot, item);
+            placeEntry(inventory, freeSlots, entry);
         }
     }
 
@@ -164,7 +163,7 @@ public final class LootService {
                 int weight = asInt(raw.get("weight"), 1);
                 int min = Math.max(1, asInt(raw.get("min"), 1));
                 int max = Math.max(min, asInt(raw.get("max"), min));
-                list.add(new LootEntry(material, Math.max(1, weight), min, max));
+                list.add(new LootEntry(category.toLowerCase(), material, Math.max(1, weight), min, max));
             }
         }
 
@@ -188,6 +187,38 @@ public final class LootService {
             }
         }
         return entries.get(entries.size() - 1);
+    }
+
+    private int placeGuaranteed(Inventory inventory, List<Integer> freeSlots, LootTable table, String... categories) {
+        for (String category : categories) {
+            LootEntry entry = pickWeightedByCategory(table.getEntries(), category);
+            if (entry != null && !freeSlots.isEmpty()) {
+                placeEntry(inventory, freeSlots, entry);
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    private LootEntry pickWeightedByCategory(List<LootEntry> entries, String category) {
+        List<LootEntry> filtered = new ArrayList<>();
+        for (LootEntry entry : entries) {
+            if (entry.category().equalsIgnoreCase(category)) {
+                filtered.add(entry);
+            }
+        }
+        return pickWeighted(filtered);
+    }
+
+    private void placeEntry(Inventory inventory, List<Integer> freeSlots, LootEntry entry) {
+        int amount = entry.min();
+        if (entry.max() > entry.min()) {
+            amount += random.nextInt(entry.max() - entry.min() + 1);
+        }
+        ItemStack item = new ItemStack(entry.material(), amount);
+        int slotIndex = random.nextInt(freeSlots.size());
+        int slot = freeSlots.remove(slotIndex);
+        inventory.setItem(slot, item);
     }
 
     private int asInt(Object value, int fallback) {

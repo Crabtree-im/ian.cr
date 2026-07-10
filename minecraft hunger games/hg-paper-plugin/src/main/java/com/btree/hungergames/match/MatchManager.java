@@ -157,6 +157,75 @@ public final class MatchManager {
         return assignSpawnsInternal();
     }
 
+    public String previewSpawns() {
+        boolean ok = assignSpawns();
+        if (!ok) {
+            return null;
+        }
+
+        List<String> lines = getSpawnAssignmentLines();
+        if (lines.isEmpty()) {
+            return "No assignments available.";
+        }
+        return String.join("\n", lines);
+    }
+
+    public List<String> getSpawnAssignmentLines() {
+        List<String> lines = new ArrayList<>();
+        List<Map.Entry<UUID, SpawnPoint>> assignments = new ArrayList<>(assignedSpawns.entrySet());
+        assignments.sort(
+                Comparator.comparing((Map.Entry<UUID, SpawnPoint> e) -> e.getValue().sectionId())
+                        .thenComparing(e -> e.getValue().spawnId())
+        );
+
+        for (Map.Entry<UUID, SpawnPoint> entry : assignments) {
+            PlayerMatchState state = players.get(entry.getKey());
+            if (state == null) {
+                continue;
+            }
+            SpawnPoint point = entry.getValue();
+            lines.add(state.getPlayerName() + " -> " + point.sectionId() + "/" + point.spawnId());
+        }
+        return lines;
+    }
+
+    public Map<String, Integer> getSpawnSectionCounts() {
+        Map<String, Integer> counts = new HashMap<>();
+        for (String section : config.getSections()) {
+            counts.put(section.toLowerCase(), 0);
+        }
+        for (SpawnPoint point : assignedSpawns.values()) {
+            counts.put(point.sectionId(), counts.getOrDefault(point.sectionId(), 0) + 1);
+        }
+        return counts;
+    }
+
+    public List<String> getSpawnAssignmentPage(int page, int pageSize) {
+        List<String> lines = getSpawnAssignmentLines();
+        if (lines.isEmpty() || pageSize <= 0) {
+            return List.of();
+        }
+
+        int safePage = Math.max(1, page);
+        int start = (safePage - 1) * pageSize;
+        if (start >= lines.size()) {
+            return List.of();
+        }
+        int end = Math.min(start + pageSize, lines.size());
+        return new ArrayList<>(lines.subList(start, end));
+    }
+
+    public int getSpawnAssignmentTotalPages(int pageSize) {
+        if (pageSize <= 0) {
+            return 0;
+        }
+        int total = getSpawnAssignmentLines().size();
+        if (total == 0) {
+            return 0;
+        }
+        return (total + pageSize - 1) / pageSize;
+    }
+
     public Location getAssignedRespawnLocation(UUID playerId) {
         SpawnPoint point = assignedSpawns.get(playerId);
         if (point == null) {

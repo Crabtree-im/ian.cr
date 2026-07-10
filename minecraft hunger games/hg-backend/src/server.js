@@ -7,6 +7,44 @@ dotenv.config();
 
 const fastify = Fastify({ logger: true });
 
+const adminApiKeys = new Set(
+  String(process.env.ADMIN_API_KEYS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+);
+
+function hasValidAdminKey(request) {
+  const key = String(request.headers["x-api-key"] || "").trim();
+  return key.length > 0 && adminApiKeys.has(key);
+}
+
+function getRole(request) {
+  return String(request.headers["x-admin-role"] || "").trim().toLowerCase();
+}
+
+async function requireAdminRead(request, reply) {
+  if (!hasValidAdminKey(request)) {
+    return reply.code(401).send({ error: "missing or invalid admin api key" });
+  }
+  const role = getRole(request);
+  if (role !== "admin" && role !== "moderator") {
+    return reply.code(403).send({ error: "admin or moderator role required" });
+  }
+  return undefined;
+}
+
+async function requireAdminWrite(request, reply) {
+  if (!hasValidAdminKey(request)) {
+    return reply.code(401).send({ error: "missing or invalid admin api key" });
+  }
+  const role = getRole(request);
+  if (role !== "admin") {
+    return reply.code(403).send({ error: "admin role required" });
+  }
+  return undefined;
+}
+
 const createApplicationSchema = z.object({
   gamertag: z.string().min(3).max(32),
   email: z.string().email(),
@@ -30,6 +68,13 @@ const paymentEvidenceSchema = z.object({
 const updatePaymentStatusSchema = z.object({
   status: z.enum(["pending", "accepted"]),
   verifiedBy: z.string().min(1).max(64).optional()
+});
+
+const createEventSchema = z.object({
+  code: z.string().min(1).max(64),
+  name: z.string().min(1).max(255),
+  state: z.string().min(1).max(32).default("planned"),
+  startsAt: z.string().datetime().optional()
 });
 
 fastify.get("/health", async () => ({ status: "ok" }));
@@ -89,7 +134,7 @@ fastify.post("/applications", async (request, reply) => {
   }
 });
 
-fastify.get("/applications", async () => {
+fastify.get("/applications", { preHandler: requireAdminRead }, async () => {
   const rows = await query(
     `
     select a.id, a.state, a.source, a.notes, a.created_at, a.updated_at,
@@ -105,7 +150,7 @@ fastify.get("/applications", async () => {
   return { applications: rows.rows };
 });
 
-fastify.get("/applications/:id", async (request, reply) => {
+fastify.get("/applications/:id", { preHandler: requireAdminRead }, async (request, reply) => {
   const id = Number(request.params.id);
   if (!Number.isInteger(id) || id <= 0) {
     return reply.code(400).send({ error: "invalid id" });
@@ -131,7 +176,7 @@ fastify.get("/applications/:id", async (request, reply) => {
   return result.rows[0];
 });
 
-fastify.patch("/applications/:id", async (request, reply) => {
+fastify.patch("/applications/:id", { preHandler: requireAdminWrite }, async (request, reply) => {
   const id = Number(request.params.id);
   if (!Number.isInteger(id) || id <= 0) {
     return reply.code(400).send({ error: "invalid id" });
@@ -181,7 +226,31 @@ fastify.post("/payments/evidence", async (request, reply) => {
   return reply.code(201).send(result.rows[0]);
 });
 
-fastify.patch("/payments/:id/status", async (request, reply) => {
+fastify.post("/admin/events", { preHandler: requireAdminWrite }, async (request, reply) => {
+  const parsed = createEventSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const payload = parsed.data;
+  const result = await query(
+    `
+    insert into events (code, name, state, starts_at)
+    values ($1, $2, $3, $4)
+    on conflict (code)
+    do update set
+      name = excluded.name,
+      state = excluded.state,
+      starts_at = excluded.starts_at
+    returning id, code, name, state, starts_at, created_at
+    `,
+    [payload.code, payload.name, payload.state, payload.startsAt ?? null]
+  );
+
+  return reply.code(201).send(result.rows[0]);
+});
+
+fastify.patch("/payments/:id/status", { preHandler: requireAdminWrite }, async (request, reply) => {
   const id = Number(request.params.id);
   if (!Number.isInteger(id) || id <= 0) {
     return reply.code(400).send({ error: "invalid id" });

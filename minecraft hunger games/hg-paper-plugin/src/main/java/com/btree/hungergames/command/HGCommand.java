@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class HGCommand implements CommandExecutor, TabCompleter {
     private final MatchManager matchManager;
@@ -25,7 +26,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|givechest>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|givechest>");
             return true;
         }
 
@@ -133,6 +134,48 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.GREEN + "Spawn assignment successful for " + matchManager.registeredCount() + " players.");
                 return true;
             }
+            case "previewspawns" -> {
+                if (!sender.hasPermission("hg.admin.setup")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+
+                int page = 1;
+                if (args.length >= 2) {
+                    try {
+                        page = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException ex) {
+                        sender.sendMessage(ChatColor.RED + "Page must be a number.");
+                        return true;
+                    }
+                }
+
+                boolean ok = matchManager.assignSpawns();
+                if (!ok) {
+                    sender.sendMessage(ChatColor.RED + "Spawn preview failed. Check section spawn counts.");
+                    return true;
+                }
+
+                final int pageSize = 15;
+                int totalPages = matchManager.getSpawnAssignmentTotalPages(pageSize);
+                if (page < 1 || page > Math.max(1, totalPages)) {
+                    sender.sendMessage(ChatColor.RED + "Page out of range. Valid pages: 1 to " + Math.max(1, totalPages));
+                    return true;
+                }
+
+                Map<String, Integer> sectionCounts = matchManager.getSpawnSectionCounts();
+                sender.sendMessage(ChatColor.AQUA + "Spawn section totals:");
+                for (Map.Entry<String, Integer> entry : sectionCounts.entrySet()) {
+                    sender.sendMessage(ChatColor.GRAY + " - " + entry.getKey() + ": " + entry.getValue());
+                }
+
+                List<String> lines = matchManager.getSpawnAssignmentPage(page, pageSize);
+                sender.sendMessage(ChatColor.AQUA + "Spawn assignments page " + page + "/" + Math.max(1, totalPages) + ":");
+                for (String line : lines) {
+                    sender.sendMessage(ChatColor.GRAY + " - " + line);
+                }
+                return true;
+            }
             case "givechest" -> {
                 if (!sender.hasPermission("hg.admin.loot")) {
                     sender.sendMessage(ChatColor.RED + "No permission.");
@@ -173,7 +216,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "givechest");
+            return List.of("startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "givechest");
         }
         if (args.length == 2 && "setlives".equalsIgnoreCase(args[0])) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
@@ -183,6 +226,9 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 2 && "registerspawn".equalsIgnoreCase(args[0])) {
             return List.of("red", "orange", "blue", "purple");
+        }
+        if (args.length == 2 && "previewspawns".equalsIgnoreCase(args[0])) {
+            return List.of("1", "2", "3", "4", "5");
         }
         if (args.length == 3 && "givechest".equalsIgnoreCase(args[0])) {
             return List.of("1", "2", "3", "4");
