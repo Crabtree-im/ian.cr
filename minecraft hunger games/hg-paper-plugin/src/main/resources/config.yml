@@ -1,0 +1,26 @@
+match:
+  player_limit: 100
+  lives_per_player: 3
+  lobby_countdown_seconds: 10
+  spawn_lock_countdown_seconds: 60
+  allow_rejoin_when_eliminated: false
+
+sections:
+  - red
+  - orange
+  - blue
+  - purple
+
+locations:
+  finale:
+    world: world
+    x: 0.0
+    y: 80.0
+    z: 0.0
+    yaw: 0.0
+    pitch: 0.0
+
+rules:
+  prestart_leave_block_penalty: instant_death
+  eliminate_on_zero_lives: true
+  kick_on_elimination: true

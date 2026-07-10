@@ -1,0 +1,28 @@
+tier: copper-3
+slot_range: [6, 9]
+items:
+  armor:
+    - { material: DIAMOND_HELMET, weight: 8, min: 1, max: 1 }
+    - { material: DIAMOND_CHESTPLATE, weight: 8, min: 1, max: 1 }
+    - { material: DIAMOND_LEGGINGS, weight: 8, min: 1, max: 1 }
+    - { material: DIAMOND_BOOTS, weight: 8, min: 1, max: 1 }
+  weapons_tools:
+    - { material: DIAMOND_SWORD, weight: 8, min: 1, max: 1 }
+    - { material: DIAMOND_AXE, weight: 8, min: 1, max: 1 }
+    - { material: DIAMOND_PICKAXE, weight: 7, min: 1, max: 1 }
+    - { material: BOW, weight: 8, min: 1, max: 1 }
+    - { material: ARROW, weight: 9, min: 1, max: 10 }
+  food:
+    - { material: COOKED_BEEF, weight: 10, min: 4, max: 10 }
+    - { material: COOKED_PORKCHOP, weight: 10, min: 4, max: 10 }
+  utility:
+    - { material: DIAMOND, weight: 10, min: 3, max: 8 }
+    - { material: WIND_CHARGE, weight: 9, min: 2, max: 8 }
+    - { material: ENDER_PEARL, weight: 9, min: 1, max: 5 }
+    - { material: EXPERIENCE_BOTTLE, weight: 9, min: 4, max: 10 }
+    - { material: GOLDEN_APPLE, weight: 8, min: 1, max: 5 }
+    - { material: ENCHANTED_GOLDEN_APPLE, weight: 2, min: 1, max: 1 }
+    - { material: COBWEB, weight: 8, min: 2, max: 8 }
+    - { material: ENCHANTED_BOOK, weight: 6, min: 1, max: 1 }
+    - { material: BOOK, weight: 6, min: 1, max: 3 }
+    - { material: LAPIS_LAZULI, weight: 8, min: 2, max: 10 }

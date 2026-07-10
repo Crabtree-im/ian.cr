@@ -1,0 +1,22 @@
+tier: normal-4
+slot_range: [5, 8]
+items:
+  armor:
+    - { material: IRON_HELMET, weight: 9, min: 1, max: 1 }
+    - { material: IRON_CHESTPLATE, weight: 9, min: 1, max: 1 }
+    - { material: IRON_LEGGINGS, weight: 9, min: 1, max: 1 }
+    - { material: IRON_BOOTS, weight: 9, min: 1, max: 1 }
+  weapons_tools:
+    - { material: IRON_SWORD, weight: 10, min: 1, max: 1 }
+    - { material: IRON_AXE, weight: 9, min: 1, max: 1 }
+    - { material: IRON_PICKAXE, weight: 8, min: 1, max: 1 }
+    - { material: BOW, weight: 7, min: 1, max: 1 }
+    - { material: ARROW, weight: 10, min: 5, max: 10 }
+    - { material: SHIELD, weight: 7, min: 1, max: 1 }
+  food:
+    - { material: COOKED_BEEF, weight: 8, min: 2, max: 8 }
+    - { material: COOKED_PORKCHOP, weight: 8, min: 2, max: 8 }
+    - { material: COOKED_CHICKEN, weight: 7, min: 2, max: 8 }
+  utility:
+    - { material: IRON_INGOT, weight: 8, min: 2, max: 8 }
+    - { material: GOLD_INGOT, weight: 7, min: 1, max: 6 }

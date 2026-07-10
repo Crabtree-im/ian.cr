@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: Hunger Games Event API
+  version: 0.1.0
+servers:
+  - url: https://api.example.com
+paths:
+  /applications:
+    post:
+      summary: Submit a player application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApplicationRequest'
+      responses:
+        '201':
+          description: Application created
+    get:
+      summary: List applications (admin)
+      responses:
+        '200':
+          description: Applications list
+  /applications/{id}:
+    get:
+      summary: Get a single application
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Application detail
+    patch:
+      summary: Update application state (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateApplicationRequest'
+      responses:
+        '200':
+          description: Application updated
+  /payments/evidence:
+    post:
+      summary: Submit payment evidence metadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentEvidenceRequest'
+      responses:
+        '201':
+          description: Evidence attached
+  /payments/{id}/status:
+    patch:
+      summary: Set payment status (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentStatusRequest'
+      responses:
+        '200':
+          description: Payment status updated
+  /players/status/{gamertag}:
+    get:
+      summary: Public status check by gamertag
+      parameters:
+        - in: path
+          name: gamertag
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Player status response
+components:
+  schemas:
+    CreateApplicationRequest:
+      type: object
+      required: [gamertag, email, eventCode]
+      properties:
+        gamertag:
+          type: string
+        email:
+          type: string
+        eventCode:
+          type: string
+        source:
+          type: string
+          default: discord
+        notes:
+          type: string
+    UpdateApplicationRequest:
+      type: object
+      required: [state]
+      properties:
+        state:
+          type: string
+          enum: [pending, accepted, rejected]
+        notes:
+          type: string
+    PaymentEvidenceRequest:
+      type: object
+      required: [playerId, eventId, evidenceUrl]
+      properties:
+        playerId:
+          type: integer
+        eventId:
+          type: integer
+        evidenceUrl:
+          type: string
+        provider:
+          type: string
+          default: patreon
+    UpdatePaymentStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, accepted]
+        verifiedBy:
+          type: string
