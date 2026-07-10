@@ -7,12 +7,16 @@ public final class PlayerMatchState {
     private final String playerName;
     private int livesRemaining;
     private boolean eliminated;
+    private String sectionId;
+    private String spawnId;
 
     public PlayerMatchState(UUID uuid, String playerName, int livesRemaining) {
         this.uuid = uuid;
         this.playerName = playerName;
         this.livesRemaining = livesRemaining;
         this.eliminated = false;
+        this.sectionId = null;
+        this.spawnId = null;
     }
 
     public UUID getUuid() {
@@ -44,5 +48,21 @@ public final class PlayerMatchState {
     public void setLivesRemaining(int livesRemaining) {
         this.livesRemaining = Math.max(0, livesRemaining);
         this.eliminated = this.livesRemaining == 0;
+    }
+
+    public String getSectionId() {
+        return sectionId;
+    }
+
+    public void setSectionId(String sectionId) {
+        this.sectionId = sectionId;
+    }
+
+    public String getSpawnId() {
+        return spawnId;
+    }
+
+    public void setSpawnId(String spawnId) {
+        this.spawnId = spawnId;
     }
 }

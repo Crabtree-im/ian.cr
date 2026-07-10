@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public final class MatchListener implements Listener {
     private final MatchManager matchManager;
@@ -43,15 +44,34 @@ public final class MatchListener implements Listener {
         if (matchManager.getState() != MatchState.SPAWN_LOCK_COUNTDOWN) {
             return;
         }
-        Location from = event.getFrom();
+
         Location to = event.getTo();
         if (to == null) {
             return;
         }
-        if (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) {
-            Player player = event.getPlayer();
-            player.sendMessage(ChatColor.RED + "You moved too early.");
-            player.setHealth(0.0);
+
+        Player player = event.getPlayer();
+        Location locked = matchManager.getLockedStartLocation(player.getUniqueId());
+        if (locked == null) {
+            return;
+        }
+
+        if (locked.getBlockX() != to.getBlockX() || locked.getBlockZ() != to.getBlockZ()) {
+            if (player.getHealth() > 0.0) {
+                player.sendMessage(ChatColor.RED + "You moved too early.");
+                player.setHealth(0.0);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        if (!matchManager.isLiveOrLocked()) {
+            return;
+        }
+        Location assigned = matchManager.getAssignedRespawnLocation(event.getPlayer().getUniqueId());
+        if (assigned != null) {
+            event.setRespawnLocation(assigned);
         }
     }
 }

@@ -1,25 +1,43 @@
 package com.btree.hungergames.match;
 
+import com.btree.hungergames.config.ArenaStore;
 import com.btree.hungergames.config.PluginConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public final class MatchManager {
     private final JavaPlugin plugin;
     private final PluginConfig config;
+    private final ArenaStore arenaStore;
     private final Map<UUID, PlayerMatchState> players = new HashMap<>();
+    private final Map<String, List<SpawnPoint>> spawnPointsBySection = new HashMap<>();
+    private final Map<UUID, SpawnPoint> assignedSpawns = new HashMap<>();
+    private final Map<UUID, Location> lockedStartLocations = new HashMap<>();
+
+    private Location finaleLocation;
+    private long currentMatchSeed;
 
     private MatchState state = MatchState.IDLE;
 
-    public MatchManager(JavaPlugin plugin, PluginConfig config) {
+    public MatchManager(JavaPlugin plugin, PluginConfig config, ArenaStore arenaStore) {
         this.plugin = plugin;
         this.config = config;
+        this.arenaStore = arenaStore;
+        this.spawnPointsBySection.putAll(arenaStore.loadSpawns());
+        this.finaleLocation = arenaStore.loadFinale();
+        this.currentMatchSeed = System.currentTimeMillis();
     }
 
     public MatchState getState() {
@@ -30,12 +48,18 @@ public final class MatchManager {
         return state == MatchState.SPAWN_LOCK_COUNTDOWN || state == MatchState.LIVE;
     }
 
-    public void startGames() {
+    public String startGames() {
         if (state != MatchState.IDLE && state != MatchState.FINISHED) {
-            return;
+            return "A match is already in progress.";
+        }
+        if (finaleLocation == null) {
+            return "Finale location is not set. Use /hg setfinale first.";
         }
 
         players.clear();
+        assignedSpawns.clear();
+        lockedStartLocations.clear();
+
         int registered = 0;
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (registered >= config.getPlayerLimit()) {
@@ -48,23 +72,36 @@ public final class MatchManager {
             ));
             registered++;
         }
+        if (players.isEmpty()) {
+            return "No players available to start.";
+        }
+
+        if (!assignSpawnsInternal()) {
+            return "Not enough configured spawn points across sections.";
+        }
+
+        currentMatchSeed = System.currentTimeMillis();
 
         state = MatchState.LOBBY_COUNTDOWN;
         Bukkit.broadcastMessage(ChatColor.GOLD + "[HG] Games starting in " + config.getLobbyCountdownSeconds() + "s...");
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            teleportPlayersToAssignedSpawns();
             state = MatchState.SPAWN_LOCK_COUNTDOWN;
             Bukkit.broadcastMessage(ChatColor.YELLOW + "[HG] Spawn lock active for " + config.getSpawnLockCountdownSeconds() + "s.");
 
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 state = MatchState.LIVE;
+                lockedStartLocations.clear();
                 Bukkit.broadcastMessage(ChatColor.GREEN + "[HG] The Hunger Games have begun.");
             }, config.getSpawnLockCountdownSeconds() * 20L);
         }, config.getLobbyCountdownSeconds() * 20L);
+        return null;
     }
 
     public void stopGames() {
         state = MatchState.FINISHED;
+        lockedStartLocations.clear();
         Bukkit.broadcastMessage(ChatColor.RED + "[HG] Match was stopped by admin.");
     }
 
@@ -89,6 +126,52 @@ public final class MatchManager {
             return;
         }
         p.setLivesRemaining(lives);
+    }
+
+    public void registerSpawnPoint(String sectionId, String spawnId, Location location) {
+        SpawnPoint point = new SpawnPoint(sectionId.toLowerCase(), spawnId.toLowerCase(), location.clone());
+        spawnPointsBySection.computeIfAbsent(point.sectionId(), ignored -> new ArrayList<>());
+
+        List<SpawnPoint> points = spawnPointsBySection.get(point.sectionId());
+        points.removeIf(existing -> existing.spawnId().equalsIgnoreCase(point.spawnId()));
+        points.add(point);
+        points.sort(Comparator.comparing(SpawnPoint::spawnId));
+        arenaStore.saveSpawnPoint(point);
+    }
+
+    public void setFinaleLocation(Location location) {
+        this.finaleLocation = location.clone();
+        arenaStore.saveFinale(location);
+    }
+
+    public boolean assignSpawns() {
+        if (players.isEmpty()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                players.put(player.getUniqueId(), new PlayerMatchState(
+                        player.getUniqueId(),
+                        player.getName(),
+                        config.getLivesPerPlayer()
+                ));
+            }
+        }
+        return assignSpawnsInternal();
+    }
+
+    public Location getAssignedRespawnLocation(UUID playerId) {
+        SpawnPoint point = assignedSpawns.get(playerId);
+        if (point == null) {
+            return null;
+        }
+        return point.location().clone();
+    }
+
+    public Location getLockedStartLocation(UUID playerId) {
+        Location loc = lockedStartLocations.get(playerId);
+        return loc == null ? null : loc.clone();
+    }
+
+    public int registeredCount() {
+        return players.size();
     }
 
     public boolean isEliminated(UUID uuid) {
@@ -124,14 +207,91 @@ public final class MatchManager {
 
         if (aliveCount() == 1 && state == MatchState.LIVE) {
             state = MatchState.FINALE;
-            Player winner = Bukkit.getOnlinePlayers().stream()
-                    .filter(p -> !isEliminated(p.getUniqueId()))
-                    .findFirst()
-                    .orElse(null);
+            Player winner = resolveWinner();
             if (winner != null) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[HG] Winner: " + winner.getName());
+                if (finaleLocation != null) {
+                    winner.teleport(finaleLocation);
+                }
             }
             state = MatchState.FINISHED;
         }
+    }
+
+    private Player resolveWinner() {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            PlayerMatchState state = players.get(online.getUniqueId());
+            if (state != null && !state.isEliminated()) {
+                return online;
+            }
+        }
+        return null;
+    }
+
+    private void teleportPlayersToAssignedSpawns() {
+        for (Map.Entry<UUID, SpawnPoint> entry : assignedSpawns.entrySet()) {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
+            Location destination = entry.getValue().location().clone();
+            player.teleport(destination);
+            lockedStartLocations.put(entry.getKey(), destination);
+        }
+    }
+
+    private boolean assignSpawnsInternal() {
+        assignedSpawns.clear();
+        List<String> sections = config.getSections();
+        if (sections.isEmpty() || players.isEmpty()) {
+            return false;
+        }
+
+        Map<String, List<SpawnPoint>> pools = new HashMap<>();
+        int totalSpawns = 0;
+        for (String section : sections) {
+            List<SpawnPoint> points = new ArrayList<>(spawnPointsBySection.getOrDefault(section.toLowerCase(), List.of()));
+            if (!points.isEmpty()) {
+                pools.put(section.toLowerCase(), points);
+                totalSpawns += points.size();
+            }
+        }
+
+        if (totalSpawns < players.size()) {
+            return false;
+        }
+
+        Random random = new Random(currentMatchSeed);
+        List<PlayerMatchState> roster = new ArrayList<>(players.values());
+        Collections.shuffle(roster, random);
+
+        int sectionCount = sections.size();
+        int base = roster.size() / sectionCount;
+        int remainder = roster.size() % sectionCount;
+
+        int rosterIndex = 0;
+        for (int i = 0; i < sectionCount; i++) {
+            String section = sections.get(i).toLowerCase();
+            int target = base + (i < remainder ? 1 : 0);
+            if (target == 0) {
+                continue;
+            }
+
+            List<SpawnPoint> points = pools.getOrDefault(section, new ArrayList<>());
+            Collections.shuffle(points, random);
+            if (points.size() < target) {
+                return false;
+            }
+
+            for (int j = 0; j < target; j++) {
+                PlayerMatchState playerState = roster.get(rosterIndex++);
+                SpawnPoint point = points.get(j);
+                playerState.setSectionId(section);
+                playerState.setSpawnId(point.spawnId());
+                assignedSpawns.put(playerState.getUuid(), point);
+            }
+        }
+
+        return assignedSpawns.size() == players.size();
     }
 }

@@ -1,5 +1,6 @@
 package com.btree.hungergames.command;
 
+import com.btree.hungergames.loot.LootService;
 import com.btree.hungergames.match.MatchManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,15 +15,17 @@ import java.util.List;
 
 public final class HGCommand implements CommandExecutor, TabCompleter {
     private final MatchManager matchManager;
+    private final LootService lootService;
 
-    public HGCommand(MatchManager matchManager) {
+    public HGCommand(MatchManager matchManager, LootService lootService) {
         this.matchManager = matchManager;
+        this.lootService = lootService;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|givechest>");
             return true;
         }
 
@@ -33,7 +36,11 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(ChatColor.RED + "No permission.");
                     return true;
                 }
-                matchManager.startGames();
+                String error = matchManager.startGames();
+                if (error != null) {
+                    sender.sendMessage(ChatColor.RED + error);
+                    return true;
+                }
                 sender.sendMessage(ChatColor.GREEN + "Started Hunger Games flow.");
                 return true;
             }
@@ -81,6 +88,81 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.GREEN + "Updated lives for " + target.getName() + " to " + value + ".");
                 return true;
             }
+            case "registerspawn" -> {
+                if (!sender.hasPermission("hg.admin.setup")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(ChatColor.RED + "Only players can register spawn points.");
+                    return true;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage(ChatColor.YELLOW + "Usage: /hg registerspawn <section> <spawn-id>");
+                    return true;
+                }
+                String section = args[1].toLowerCase();
+                String spawnId = args[2].toLowerCase();
+                matchManager.registerSpawnPoint(section, spawnId, player.getLocation());
+                sender.sendMessage(ChatColor.GREEN + "Registered spawn " + spawnId + " in section " + section + ".");
+                return true;
+            }
+            case "setfinale" -> {
+                if (!sender.hasPermission("hg.admin.setup")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(ChatColor.RED + "Only players can set finale location.");
+                    return true;
+                }
+                matchManager.setFinaleLocation(player.getLocation());
+                sender.sendMessage(ChatColor.GREEN + "Finale location updated.");
+                return true;
+            }
+            case "assignspawns" -> {
+                if (!sender.hasPermission("hg.admin.setup")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                boolean ok = matchManager.assignSpawns();
+                if (!ok) {
+                    sender.sendMessage(ChatColor.RED + "Spawn assignment failed. Check section spawn counts.");
+                    return true;
+                }
+                sender.sendMessage(ChatColor.GREEN + "Spawn assignment successful for " + matchManager.registeredCount() + " players.");
+                return true;
+            }
+            case "givechest" -> {
+                if (!sender.hasPermission("hg.admin.loot")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(ChatColor.RED + "Only players can receive loot chest items.");
+                    return true;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage(ChatColor.YELLOW + "Usage: /hg givechest <normal|copper> <tier>");
+                    return true;
+                }
+
+                String type = args[1].toLowerCase();
+                if (!"normal".equals(type) && !"copper".equals(type)) {
+                    sender.sendMessage(ChatColor.RED + "Type must be normal or copper.");
+                    return true;
+                }
+                int tier;
+                try {
+                    tier = Integer.parseInt(args[2]);
+                } catch (NumberFormatException ex) {
+                    sender.sendMessage(ChatColor.RED + "Tier must be a number.");
+                    return true;
+                }
+                player.getInventory().addItem(lootService.createChestToken(type, tier));
+                sender.sendMessage(ChatColor.GREEN + "Given " + type + " chest token tier " + tier + ".");
+                return true;
+            }
             default -> {
                 sender.sendMessage(ChatColor.YELLOW + "Unknown subcommand.");
                 return true;
@@ -91,10 +173,19 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("startgames", "stop", "status", "setlives");
+            return List.of("startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "givechest");
         }
         if (args.length == 2 && "setlives".equalsIgnoreCase(args[0])) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
+        }
+        if (args.length == 2 && "givechest".equalsIgnoreCase(args[0])) {
+            return List.of("normal", "copper");
+        }
+        if (args.length == 2 && "registerspawn".equalsIgnoreCase(args[0])) {
+            return List.of("red", "orange", "blue", "purple");
+        }
+        if (args.length == 3 && "givechest".equalsIgnoreCase(args[0])) {
+            return List.of("1", "2", "3", "4");
         }
         return new ArrayList<>();
     }

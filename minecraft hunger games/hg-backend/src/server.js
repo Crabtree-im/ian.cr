@@ -1,0 +1,273 @@
+import dotenv from "dotenv";
+import Fastify from "fastify";
+import { z } from "zod";
+import { query, withTransaction, pool } from "./db.js";
+
+dotenv.config();
+
+const fastify = Fastify({ logger: true });
+
+const createApplicationSchema = z.object({
+  gamertag: z.string().min(3).max(32),
+  email: z.string().email(),
+  eventCode: z.string().min(1).max(64),
+  source: z.string().min(1).max(32).default("discord"),
+  notes: z.string().max(2000).optional()
+});
+
+const updateApplicationSchema = z.object({
+  state: z.enum(["pending", "accepted", "rejected"]),
+  notes: z.string().max(2000).optional()
+});
+
+const paymentEvidenceSchema = z.object({
+  playerId: z.number().int().positive(),
+  eventId: z.number().int().positive(),
+  evidenceUrl: z.string().url(),
+  provider: z.string().min(1).max(64).default("patreon")
+});
+
+const updatePaymentStatusSchema = z.object({
+  status: z.enum(["pending", "accepted"]),
+  verifiedBy: z.string().min(1).max(64).optional()
+});
+
+fastify.get("/health", async () => ({ status: "ok" }));
+
+fastify.post("/applications", async (request, reply) => {
+  const parsed = createApplicationSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const payload = parsed.data;
+
+  try {
+    const result = await withTransaction(async (client) => {
+      const playerRow = await client.query(
+        `
+        insert into players (gamertag, email, status)
+        values ($1, $2, 'applied')
+        on conflict (gamertag)
+        do update set email = excluded.email
+        returning id, gamertag, email, status
+        `,
+        [payload.gamertag, payload.email]
+      );
+
+      const eventRow = await client.query(
+        `select id, code from events where code = $1 limit 1`,
+        [payload.eventCode]
+      );
+      if (eventRow.rowCount === 0) {
+        throw new Error("eventCode not found");
+      }
+
+      const player = playerRow.rows[0];
+      const event = eventRow.rows[0];
+
+      const appRow = await client.query(
+        `
+        insert into applications (player_id, event_id, state, source, notes)
+        values ($1, $2, 'pending', $3, $4)
+        on conflict (player_id, event_id)
+        do update set source = excluded.source, notes = excluded.notes, updated_at = now()
+        returning id, player_id, event_id, state, source, notes, created_at, updated_at
+        `,
+        [player.id, event.id, payload.source, payload.notes ?? null]
+      );
+
+      return { player, application: appRow.rows[0] };
+    });
+
+    return reply.code(201).send(result);
+  } catch (error) {
+    if (error instanceof Error && error.message === "eventCode not found") {
+      return reply.code(400).send({ error: "eventCode not found" });
+    }
+    throw error;
+  }
+});
+
+fastify.get("/applications", async () => {
+  const rows = await query(
+    `
+    select a.id, a.state, a.source, a.notes, a.created_at, a.updated_at,
+           p.id as player_id, p.gamertag, p.email,
+           e.id as event_id, e.code as event_code
+    from applications a
+    join players p on p.id = a.player_id
+    join events e on e.id = a.event_id
+    order by a.created_at desc
+    limit 500
+    `
+  );
+  return { applications: rows.rows };
+});
+
+fastify.get("/applications/:id", async (request, reply) => {
+  const id = Number(request.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return reply.code(400).send({ error: "invalid id" });
+  }
+
+  const result = await query(
+    `
+    select a.id, a.state, a.source, a.notes, a.created_at, a.updated_at,
+           p.id as player_id, p.gamertag, p.email,
+           e.id as event_id, e.code as event_code
+    from applications a
+    join players p on p.id = a.player_id
+    join events e on e.id = a.event_id
+    where a.id = $1
+    `,
+    [id]
+  );
+
+  if (result.rowCount === 0) {
+    return reply.code(404).send({ error: "application not found" });
+  }
+
+  return result.rows[0];
+});
+
+fastify.patch("/applications/:id", async (request, reply) => {
+  const id = Number(request.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return reply.code(400).send({ error: "invalid id" });
+  }
+
+  const parsed = updateApplicationSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const payload = parsed.data;
+  const result = await query(
+    `
+    update applications
+    set state = $2,
+        notes = coalesce($3, notes),
+        updated_at = now()
+    where id = $1
+    returning id, player_id, event_id, state, source, notes, created_at, updated_at
+    `,
+    [id, payload.state, payload.notes ?? null]
+  );
+
+  if (result.rowCount === 0) {
+    return reply.code(404).send({ error: "application not found" });
+  }
+
+  return result.rows[0];
+});
+
+fastify.post("/payments/evidence", async (request, reply) => {
+  const parsed = paymentEvidenceSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const payload = parsed.data;
+  const result = await query(
+    `
+    insert into payments (player_id, event_id, provider, status, evidence_url, evidence_type)
+    values ($1, $2, $3, 'pending', $4, 'screenshot')
+    returning id, player_id, event_id, provider, status, evidence_url, evidence_type, created_at
+    `,
+    [payload.playerId, payload.eventId, payload.provider, payload.evidenceUrl]
+  );
+
+  return reply.code(201).send(result.rows[0]);
+});
+
+fastify.patch("/payments/:id/status", async (request, reply) => {
+  const id = Number(request.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return reply.code(400).send({ error: "invalid id" });
+  }
+
+  const parsed = updatePaymentStatusSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const payload = parsed.data;
+  const result = await query(
+    `
+    update payments
+    set status = $2,
+        verified_by = coalesce($3, verified_by),
+        verified_at = case when $2 = 'accepted' then now() else verified_at end
+    where id = $1
+    returning id, player_id, event_id, provider, status, evidence_url, verified_by, verified_at, created_at
+    `,
+    [id, payload.status, payload.verifiedBy ?? null]
+  );
+
+  if (result.rowCount === 0) {
+    return reply.code(404).send({ error: "payment not found" });
+  }
+
+  return result.rows[0];
+});
+
+fastify.get("/players/status/:gamertag", async (request, reply) => {
+  const gamertag = String(request.params.gamertag || "").trim();
+  if (!gamertag) {
+    return reply.code(400).send({ error: "gamertag required" });
+  }
+
+  const result = await query(
+    `
+    select p.gamertag,
+           p.status as player_status,
+           a.state as application_state,
+           pay.status as payment_status,
+           e.code as event_code
+    from players p
+    left join applications a on a.player_id = p.id
+    left join events e on e.id = a.event_id
+    left join lateral (
+      select status from payments pay
+      where pay.player_id = p.id
+      order by pay.created_at desc
+      limit 1
+    ) pay on true
+    where lower(p.gamertag) = lower($1)
+    order by a.created_at desc nulls last
+    limit 1
+    `,
+    [gamertag]
+  );
+
+  if (result.rowCount === 0) {
+    return reply.code(404).send({ error: "player not found" });
+  }
+
+  return result.rows[0];
+});
+
+const port = Number(process.env.PORT || 3000);
+const host = process.env.HOST || "0.0.0.0";
+
+const start = async () => {
+  try {
+    await fastify.listen({ port, host });
+  } catch (error) {
+    fastify.log.error(error);
+    await pool.end();
+    process.exit(1);
+  }
+};
+
+const shutdown = async () => {
+  await fastify.close();
+  await pool.end();
+  process.exit(0);
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+start();
