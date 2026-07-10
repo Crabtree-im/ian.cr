@@ -39,9 +39,13 @@
 	- Admins complete prize verification and payout steps.
 
 ## Tie Resolution
-- If final 2 players die at effectively the same time, winner is chosen by final kill-feed ordering.
-- Current draft rule: whichever name appears last on screen is revived with their gear and declared winner.
-- This rule should be converted into a deterministic server event ordering rule during implementation.
+- If final 2 players die near-simultaneously, winner is resolved by deterministic server ordering.
+- Resolution order:
+	- 1) Later server tick death event wins.
+	- 2) If same tick, later event sequence index wins.
+	- 3) If still tied, higher pre-death health wins.
+	- 4) If still tied, randomized tiebreak using match seed + player UUID hash.
+- Winner is revived automatically with recorded pre-elimination gear snapshot and teleported to finale flow.
 
 ## Fairness Notes
 - 3-life format is intentionally designed to increase playtime value for paid participants.
