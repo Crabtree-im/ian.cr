@@ -18,6 +18,7 @@ final class CaptureViewModel: ObservableObject {
     @Published private(set) var transferProgress: Double = 0
     @Published private(set) var transferStatusText = "Idle"
     @Published private(set) var canRetryUpload = false
+    @Published private(set) var isCameraReady = false
 
     var isCapacityReached: Bool {
         frameCount >= maxFrames
@@ -78,8 +79,9 @@ final class CaptureViewModel: ObservableObject {
             if batchURL == nil {
                 batchURL = try storageService.createBatchFolder()
             }
+            isCameraReady = false
             try await cameraService.requestAndConfigure()
-            cameraService.startRunning()
+            isCameraReady = true
             transferService.start()
             if let batchURL {
                 let frameNames = try storageService.existingFrameFileNames(in: batchURL)
@@ -100,12 +102,13 @@ final class CaptureViewModel: ObservableObject {
     }
 
     func onDisappear() {
+        isCameraReady = false
         cameraService.stopRunning()
         transferService.stop()
     }
 
     func captureFrame() async {
-        guard !isCapacityReached, !isBusy, let batchURL else { return }
+        guard isCameraReady, !isCapacityReached, !isBusy, let batchURL else { return }
 
         isBusy = true
         defer { isBusy = false }

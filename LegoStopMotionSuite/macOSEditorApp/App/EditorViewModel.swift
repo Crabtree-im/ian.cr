@@ -132,15 +132,34 @@ final class EditorViewModel: ObservableObject {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-        panel.allowsMultipleSelection = false
-        panel.allowedContentTypes = [UTType.zip]
+        panel.allowsMultipleSelection = true
+        panel.allowedContentTypes = [UTType.zip, UTType.image]
 
         let response = panel.runModal()
-        guard response == .OK, let selectedURL = panel.url else {
+        guard response == .OK else {
             return
         }
 
-        await handleIncomingZip(selectedURL)
+        let selectedURLs = panel.urls
+        guard !selectedURLs.isEmpty else { return }
+
+        let zipURLs = selectedURLs.filter { $0.pathExtension.lowercased() == "zip" }
+        let imageURLs = selectedURLs.filter {
+            guard let type = UTType(filenameExtension: $0.pathExtension) else { return false }
+            return type.conforms(to: .image)
+        }
+
+        if zipURLs.count == 1, imageURLs.isEmpty {
+            await handleIncomingZip(zipURLs[0])
+            return
+        }
+
+        if !zipURLs.isEmpty {
+            present(ImportSelectionError.mixedSelection)
+            return
+        }
+
+        await handleIncomingImages(imageURLs)
     }
 
     func retryImport() async {
@@ -169,6 +188,26 @@ final class EditorViewModel: ObservableObject {
         }
     }
 
+    private func handleIncomingImages(_ imageURLs: [URL]) async {
+        do {
+            receiveProgress = 0
+            receiveStatusText = "Importing images..."
+            let imported = try importer.importImageSequence(from: imageURLs, into: try projectStore.createProjectFolder())
+            importedFrameURLs = imported.frameURLs
+            timelineVM.load(frames: imported.manifest.frames)
+            currentPreviewImage = importedFrameURLs.first.flatMap(NSImage.init(contentsOf:))
+            connectionStatus = "Imported images: \(imported.manifest.frames.count) frames"
+            receiveStatusText = "Import complete"
+            receiveProgress = 1
+            canRetryImport = false
+            lastFailedZipURL = nil
+        } catch {
+            canRetryImport = false
+            receiveStatusText = "Import failed"
+            present(error)
+        }
+    }
+
     private func startPlaybackLoop() {
         playbackTask?.cancel()
         playbackTask = Task { @MainActor in
@@ -188,5 +227,16 @@ final class EditorViewModel: ObservableObject {
     private func present(_ error: Error) {
         errorMessage = error.localizedDescription
         showError = true
+    }
+}
+
+private enum ImportSelectionError: LocalizedError {
+    case mixedSelection
+
+    var errorDescription: String? {
+        switch self {
+        case .mixedSelection:
+            return "Choose either one .zip batch or one/more image files, not both at once."
+        }
     }
 }

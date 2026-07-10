@@ -31,12 +31,12 @@ struct CaptureView: View {
                     Button {
                         Task { await viewModel.captureFrame() }
                     } label: {
-                        Text(viewModel.isCapacityReached ? "Maxed" : "Capture")
+                        Text(viewModel.isCapacityReached ? "Maxed" : (viewModel.isCameraReady ? "Capture" : "Starting Camera..."))
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.isCapacityReached || viewModel.isBusy)
+                    .disabled(!viewModel.isCameraReady || viewModel.isCapacityReached || viewModel.isBusy)
 
                     Button {
                         Task { await viewModel.uploadBatch() }
@@ -106,7 +106,7 @@ struct CaptureView: View {
                 HStack {
                     Text("Frames: \(viewModel.frameCount)/\(viewModel.maxFrames)")
                     Spacer()
-                    Text(viewModel.isPeerConnected ? "Mac Connected" : "Waiting for Mac")
+                    Text(viewModel.isCameraReady ? (viewModel.isPeerConnected ? "Mac Connected" : "Waiting for Mac") : "Camera not ready")
                 }
                 .font(.footnote.monospacedDigit())
                 .padding(.horizontal)

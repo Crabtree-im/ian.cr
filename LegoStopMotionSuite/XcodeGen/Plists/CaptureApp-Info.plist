@@ -18,5 +18,13 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_lego-stpmtn._tcp</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Capture LEGO stop-motion frames.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Connect to your Mac editor for local frame transfer.</string>
 </dict>
 </plist>

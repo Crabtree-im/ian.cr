@@ -53,6 +53,45 @@ struct BatchImportService {
         return ImportedBatch(manifest: manifest, frameURLs: frameURLs, projectFolderURL: projectFolderURL)
     }
 
+    func importImageSequence(from imageURLs: [URL], into projectFolderURL: URL) throws -> ImportedBatch {
+        let orderedSourceURLs = imageURLs.sorted {
+            $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending
+        }
+        guard !orderedSourceURLs.isEmpty else {
+            throw ImportError.missingFrame("No image files selected")
+        }
+
+        let sourceFolder = projectFolderURL.appendingPathComponent("source", isDirectory: true)
+        try FileManager.default.createDirectory(at: sourceFolder, withIntermediateDirectories: true)
+
+        let fm = FileManager.default
+        var importedFrameURLs: [URL] = []
+        var frameNames: [String] = []
+
+        for (index, sourceURL) in orderedSourceURLs.enumerated() {
+            let ext = sourceURL.pathExtension.isEmpty ? "jpg" : sourceURL.pathExtension.lowercased()
+            let baseName = FileNaming.frameName(index: index + 1)
+            let destinationName = (baseName as NSString).deletingPathExtension + "." + ext
+            let destinationURL = sourceFolder.appendingPathComponent(destinationName)
+            try fm.copyItem(at: sourceURL, to: destinationURL)
+            importedFrameURLs.append(destinationURL)
+            frameNames.append(destinationName)
+        }
+
+        let manifest = BatchManifest(
+            batchID: UUID(),
+            createdAt: Date(),
+            fps: nil,
+            frames: frameNames,
+            checksums: nil
+        )
+
+        let manifestData = try JSONCoding.encoder.encode(manifest)
+        try manifestData.write(to: sourceFolder.appendingPathComponent("manifest.json"), options: .atomic)
+
+        return ImportedBatch(manifest: manifest, frameURLs: importedFrameURLs, projectFolderURL: projectFolderURL)
+    }
+
     private func findManifest(in folder: URL) -> URL? {
         if let enumerator = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: nil) {
             for case let fileURL as URL in enumerator where fileURL.lastPathComponent == "manifest.json" {

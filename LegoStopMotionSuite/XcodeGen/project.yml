@@ -33,6 +33,11 @@ targets:
       Release: Config/Release.xcconfig
     info:
       path: Plists/CaptureApp-Info.plist
+      properties:
+        NSBonjourServices:
+          - _lego-stpmtn._tcp
+        NSCameraUsageDescription: Capture LEGO stop-motion frames.
+        NSLocalNetworkUsageDescription: Connect to your Mac editor for local frame transfer.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.icrabtree.stopmotion.capture

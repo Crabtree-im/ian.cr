@@ -53,3 +53,12 @@ struct PhotoStorageService {
         return root
     }
 }
+
+extension PhotoStorageService.StorageError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .maxFramesReached:
+            return "Maximum frame limit reached for this take. Start a new take to continue capturing."
+        }
+    }
+}

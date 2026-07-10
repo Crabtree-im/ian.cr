@@ -16,7 +16,7 @@ struct EditorRootView: View {
                 }
                 .disabled(viewModel.timelineVM.frames.isEmpty)
 
-                Button("Import Zip...") {
+                Button("Import Photos/Zip...") {
                     Task { await viewModel.importZipFromOpenPanel() }
                 }
 
