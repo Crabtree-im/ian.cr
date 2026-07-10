@@ -77,6 +77,13 @@ const createEventSchema = z.object({
   startsAt: z.string().datetime().optional()
 });
 
+const listEventsQuerySchema = z.object({
+  state: z.string().min(1).max(32).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  limit: z.coerce.number().int().min(1).max(500).default(100)
+});
+
 fastify.get("/health", async () => ({ status: "ok" }));
 
 fastify.post("/applications", async (request, reply) => {
@@ -248,6 +255,33 @@ fastify.post("/admin/events", { preHandler: requireAdminWrite }, async (request,
   );
 
   return reply.code(201).send(result.rows[0]);
+});
+
+fastify.get("/admin/events", { preHandler: requireAdminRead }, async (request, reply) => {
+  const parsed = listEventsQuerySchema.safeParse(request.query || {});
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const { state, from, to, limit } = parsed.data;
+  const result = await query(
+    `
+    select id, code, name, state, starts_at, created_at
+    from events
+    where ($1::text is null or state = $1)
+      and ($2::timestamptz is null or starts_at >= $2)
+      and ($3::timestamptz is null or starts_at <= $3)
+    order by coalesce(starts_at, created_at) desc, id desc
+    limit $4
+    `,
+    [state ?? null, from ?? null, to ?? null, limit]
+  );
+
+  return {
+    filters: { state: state ?? null, from: from ?? null, to: to ?? null, limit },
+    count: result.rowCount,
+    events: result.rows
+  };
 });
 
 fastify.patch("/payments/:id/status", { preHandler: requireAdminWrite }, async (request, reply) => {

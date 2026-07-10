@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|givechest>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|exportspawns|givechest>");
             return true;
         }
 
@@ -176,6 +177,23 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
                 }
                 return true;
             }
+            case "exportspawns" -> {
+                if (!sender.hasPermission("hg.admin.setup")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                try {
+                    String filePath = matchManager.exportSpawnPreviewToFile();
+                    if (filePath == null) {
+                        sender.sendMessage(ChatColor.RED + "Spawn export failed. Check section spawn counts.");
+                        return true;
+                    }
+                    sender.sendMessage(ChatColor.GREEN + "Spawn preview exported to: " + filePath);
+                } catch (IOException e) {
+                    sender.sendMessage(ChatColor.RED + "Failed to export spawn preview: " + e.getMessage());
+                }
+                return true;
+            }
             case "givechest" -> {
                 if (!sender.hasPermission("hg.admin.loot")) {
                     sender.sendMessage(ChatColor.RED + "No permission.");
@@ -216,7 +234,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "givechest");
+            return List.of("startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "exportspawns", "givechest");
         }
         if (args.length == 2 && "setlives".equalsIgnoreCase(args[0])) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();

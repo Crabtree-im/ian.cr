@@ -8,6 +8,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -224,6 +230,37 @@ public final class MatchManager {
             return 0;
         }
         return (total + pageSize - 1) / pageSize;
+    }
+
+    public String exportSpawnPreviewToFile() throws IOException {
+        boolean ok = assignSpawns();
+        if (!ok) {
+            return null;
+        }
+
+        List<String> out = new ArrayList<>();
+        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
+        out.add("Hunger Games Spawn Assignment Export");
+        out.add("generated_at_utc=" + now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        out.add("player_count=" + registeredCount());
+        out.add("");
+        out.add("Section totals:");
+        for (String section : config.getSections()) {
+            int count = getSpawnSectionCounts().getOrDefault(section.toLowerCase(), 0);
+            out.add("- " + section.toLowerCase() + ": " + count);
+        }
+        out.add("");
+        out.add("Assignments:");
+        for (String line : getSpawnAssignmentLines()) {
+            out.add("- " + line);
+        }
+
+        Path reportsDir = plugin.getDataFolder().toPath().resolve("reports");
+        Files.createDirectories(reportsDir);
+        String fileName = "spawn-preview-" + now.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + ".txt";
+        Path output = reportsDir.resolve(fileName);
+        Files.write(output, out);
+        return output.toAbsolutePath().toString();
     }
 
     public Location getAssignedRespawnLocation(UUID playerId) {

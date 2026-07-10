@@ -24,6 +24,7 @@ This folder now includes a runnable Fastify API scaffold plus PostgreSQL schema.
 - Admin read routes:
 	- `GET /applications`
 	- `GET /applications/:id`
+	- `GET /admin/events`
 
 - Admin write routes:
 	- `PATCH /applications/:id`
@@ -37,15 +38,17 @@ This folder now includes a runnable Fastify API scaffold plus PostgreSQL schema.
 - PATCH /applications/:id
 - POST /payments/evidence
 - PATCH /payments/:id/status
+- GET /admin/events
 - POST /admin/events
 - GET /players/status/:gamertag
 
 ## Event Bootstrap
 - API route (admin): `POST /admin/events`
+- Event list route (admin): `GET /admin/events?state=planned&from=2026-07-01T00:00:00Z&to=2026-07-31T23:59:59Z&limit=100`
 - CLI shortcut:
 	- `npm run seed:event -- --code=hg-qualifier --name="HG Qualifier" --state=planned --startsAt=2026-07-25T18:00:00Z`
 
 ## Next Hardening Steps
 - Add rate limiting to public routes.
 - Add upload endpoint for screenshot files (currently URL metadata only).
-- Add event creation/admin endpoints.
+- Add admin action audit logging middleware.

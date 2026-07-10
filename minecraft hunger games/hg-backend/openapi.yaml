@@ -95,6 +95,40 @@ paths:
         '200':
           description: Payment status updated
   /admin/events:
+    get:
+      summary: List event records (admin)
+      security:
+        - AdminApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/AdminRoleHeader'
+        - in: query
+          name: state
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Event list returned
     post:
       summary: Create or update event record (admin)
       security:
