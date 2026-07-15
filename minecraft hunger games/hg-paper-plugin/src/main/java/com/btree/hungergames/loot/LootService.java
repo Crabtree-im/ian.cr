@@ -58,6 +58,10 @@ public final class LootService {
         plugin.getLogger().info("Loaded " + tables.size() + " loot tables.");
     }
 
+    public int getTableCount() {
+        return tables.size();
+    }
+
     public ItemStack createChestToken(String tierType, int tierLevel) {
         ItemStack item = new ItemStack(Material.CHEST, 1);
         ItemMeta meta = item.getItemMeta();

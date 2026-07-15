@@ -379,6 +379,43 @@ fastify.patch("/players/:id", { preHandler: requireAdminWrite }, async (request,
   return result.rows[0];
 });
 
+fastify.get("/admin/events/:code/whitelist", { preHandler: requireAdminRead }, async (request, reply) => {
+  const code = String(request.params.code || "").trim();
+  if (!code) {
+    return reply.code(400).send({ error: "event code required" });
+  }
+
+  const eventRow = await query(
+    `select id, code, name, state from events where code = $1 limit 1`,
+    [code]
+  );
+  if (eventRow.rowCount === 0) {
+    return reply.code(404).send({ error: "event not found" });
+  }
+
+  const result = await query(
+    `
+    select distinct p.gamertag
+    from players p
+    join applications a on a.player_id = p.id
+    join events e on e.id = a.event_id
+    join payments pay on pay.player_id = p.id and pay.event_id = e.id
+    where e.code = $1
+      and a.state = 'accepted'
+      and pay.status = 'accepted'
+    order by p.gamertag
+    `,
+    [code]
+  );
+
+  const ev = eventRow.rows[0];
+  return {
+    event: { code: ev.code, name: ev.name, state: ev.state },
+    count: result.rowCount,
+    gamertags: result.rows.map(r => r.gamertag)
+  };
+});
+
 fastify.get("/players/status/:gamertag", async (request, reply) => {
   const gamertag = String(request.params.gamertag || "").trim();
   if (!gamertag) {

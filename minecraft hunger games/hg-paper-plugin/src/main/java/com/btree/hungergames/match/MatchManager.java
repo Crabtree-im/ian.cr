@@ -389,6 +389,19 @@ public final class MatchManager {
         return p == null ? 0 : p.getLivesRemaining();
     }
 
+    public boolean hasFinaleLocation() {
+        return finaleLocation != null;
+    }
+
+    public Map<String, Integer> getConfiguredSpawnCounts() {
+        Map<String, Integer> counts = new HashMap<>();
+        for (String section : config.getSections()) {
+            List<SpawnPoint> points = spawnPointsBySection.getOrDefault(section.toLowerCase(), List.of());
+            counts.put(section.toLowerCase(), points.size());
+        }
+        return counts;
+    }
+
     private void eliminate(Player player, String cause, String killerName) {
         PlayerMatchState p = players.get(player.getUniqueId());
         String sectionId = p != null && p.getSectionId() != null ? p.getSectionId() : "unknown";

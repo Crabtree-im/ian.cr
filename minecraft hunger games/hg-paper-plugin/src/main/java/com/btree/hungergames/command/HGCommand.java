@@ -27,12 +27,53 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|exportspawns|givechest>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <check|startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|exportspawns|givechest>");
             return true;
         }
 
         String sub = args[0].toLowerCase();
         switch (sub) {
+            case "check" -> {
+                if (!sender.hasPermission("hg.admin.status")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                sender.sendMessage(ChatColor.GOLD + "══════ HG Readiness Check ══════");
+
+                boolean readyState = matchManager.getState() == com.btree.hungergames.match.MatchState.IDLE
+                    || matchManager.getState() == com.btree.hungergames.match.MatchState.FINISHED;
+                sender.sendMessage((readyState ? ChatColor.GREEN : ChatColor.YELLOW)
+                    + "Match state: " + matchManager.getState());
+
+                boolean hasFinale = matchManager.hasFinaleLocation();
+                sender.sendMessage((hasFinale ? ChatColor.GREEN : ChatColor.RED)
+                    + "Finale location: " + (hasFinale ? "set" : "NOT SET ✗"));
+
+                sender.sendMessage(ChatColor.AQUA + "Configured spawn points:");
+                Map<String, Integer> spawnCounts = matchManager.getConfiguredSpawnCounts();
+                int totalSpawns = 0;
+                for (Map.Entry<String, Integer> entry : spawnCounts.entrySet()) {
+                    int count = entry.getValue();
+                    totalSpawns += count;
+                    sender.sendMessage((count > 0 ? ChatColor.GREEN : ChatColor.RED)
+                        + "  " + entry.getKey() + ": " + count);
+                }
+                sender.sendMessage(ChatColor.GRAY + "  Total: " + totalSpawns);
+
+                int tables = lootService.getTableCount();
+                sender.sendMessage((tables >= 7 ? ChatColor.GREEN : ChatColor.RED)
+                    + "Loot tables loaded: " + tables + "/7");
+
+                int online = Bukkit.getOnlinePlayers().size();
+                sender.sendMessage(ChatColor.GRAY + "Players online: " + online);
+
+                double[] tps = Bukkit.getTPS();
+                double tps1m = tps.length > 0 ? tps[0] : -1;
+                sender.sendMessage((tps1m >= 18.0 ? ChatColor.GREEN : ChatColor.RED)
+                    + "TPS (1m avg): " + String.format("%.1f", tps1m));
+
+                return true;
+            }
             case "startgames" -> {
                 if (!sender.hasPermission("hg.admin.start")) {
                     sender.sendMessage(ChatColor.RED + "No permission.");
@@ -234,7 +275,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "exportspawns", "givechest");
+            return List.of("check", "startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "exportspawns", "givechest");
         }
         if (args.length == 2 && "setlives".equalsIgnoreCase(args[0])) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
