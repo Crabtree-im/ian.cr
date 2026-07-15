@@ -27,7 +27,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <check|startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|exportspawns|givechest>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /hg <check|startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|exportspawns|chestfill|givechest>");
             return true;
         }
 
@@ -235,6 +235,26 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
                 }
                 return true;
             }
+            case "chestfill" -> {
+                if (!sender.hasPermission("hg.admin.loot")) {
+                    sender.sendMessage(ChatColor.RED + "No permission.");
+                    return true;
+                }
+                if (args.length < 2 || (!"on".equalsIgnoreCase(args[1]) && !"off".equalsIgnoreCase(args[1]))) {
+                    sender.sendMessage(ChatColor.YELLOW + "Usage: /hg chestfill <on|off>");
+                    boolean current = lootService.isFillModeActive();
+                    sender.sendMessage(ChatColor.GRAY + "Fill mode is currently: " + (current ? ChatColor.GREEN + "ON" : ChatColor.RED + "OFF"));
+                    return true;
+                }
+                boolean enable = "on".equalsIgnoreCase(args[1]);
+                lootService.setFillMode(enable);
+                if (enable) {
+                    sender.sendMessage(ChatColor.GREEN + "[HG] Chest fill mode ON — place any chest to auto-fill with random loot.");
+                } else {
+                    sender.sendMessage(ChatColor.YELLOW + "[HG] Chest fill mode OFF.");
+                }
+                return true;
+            }
             case "givechest" -> {
                 if (!sender.hasPermission("hg.admin.loot")) {
                     sender.sendMessage(ChatColor.RED + "No permission.");
@@ -275,7 +295,7 @@ public final class HGCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("check", "startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "exportspawns", "givechest");
+            return List.of("check", "startgames", "stop", "status", "setlives", "registerspawn", "setfinale", "assignspawns", "previewspawns", "exportspawns", "chestfill", "givechest");
         }
         if (args.length == 2 && "setlives".equalsIgnoreCase(args[0])) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();

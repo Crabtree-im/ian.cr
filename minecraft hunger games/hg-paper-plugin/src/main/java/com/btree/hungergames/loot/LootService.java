@@ -29,6 +29,7 @@ public final class LootService {
     private final Map<String, LootTable> tables = new HashMap<>();
     private final NamespacedKey tierTypeKey;
     private final NamespacedKey tierLevelKey;
+    private boolean fillModeActive = false;
 
     public LootService(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -60,6 +61,35 @@ public final class LootService {
 
     public int getTableCount() {
         return tables.size();
+    }
+
+    public void setFillMode(boolean active) {
+        this.fillModeActive = active;
+    }
+
+    public boolean isFillModeActive() {
+        return fillModeActive;
+    }
+
+    public String fillInventoryRandom(Inventory inventory) {
+        if (tables.isEmpty()) {
+            return null;
+        }
+        List<String> keys = new ArrayList<>(tables.keySet());
+        String key = keys.get(random.nextInt(keys.size()));
+        int lastDash = key.lastIndexOf('-');
+        if (lastDash < 0 || lastDash >= key.length() - 1) {
+            return null;
+        }
+        String tierType = key.substring(0, lastDash);
+        int tierLevel;
+        try {
+            tierLevel = Integer.parseInt(key.substring(lastDash + 1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        fillInventory(inventory, tierType, tierLevel);
+        return key;
     }
 
     public ItemStack createChestToken(String tierType, int tierLevel) {
