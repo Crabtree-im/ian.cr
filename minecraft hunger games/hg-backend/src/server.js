@@ -84,6 +84,16 @@ const listEventsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(500).default(100)
 });
 
+const listPlayersQuerySchema = z.object({
+  status: z.enum(["applied", "approved", "eliminated", "banned"]).optional(),
+  limit: z.coerce.number().int().min(1).max(500).default(100),
+  offset: z.coerce.number().int().min(0).default(0)
+});
+
+const updatePlayerSchema = z.object({
+  status: z.enum(["applied", "approved", "eliminated", "banned"])
+});
+
 fastify.get("/health", async () => ({ status: "ok" }));
 
 fastify.post("/applications", async (request, reply) => {
@@ -310,6 +320,60 @@ fastify.patch("/payments/:id/status", { preHandler: requireAdminWrite }, async (
 
   if (result.rowCount === 0) {
     return reply.code(404).send({ error: "payment not found" });
+  }
+
+  return result.rows[0];
+});
+
+fastify.get("/players", { preHandler: requireAdminRead }, async (request, reply) => {
+  const parsed = listPlayersQuerySchema.safeParse(request.query || {});
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const { status, limit, offset } = parsed.data;
+  const result = await query(
+    `
+    select id, gamertag, email, status, created_at
+    from players
+    where ($1::text is null or status = $1)
+    order by created_at desc, id desc
+    limit $2
+    offset $3
+    `,
+    [status ?? null, limit, offset]
+  );
+
+  return {
+    filters: { status: status ?? null, limit, offset },
+    count: result.rowCount,
+    players: result.rows
+  };
+});
+
+fastify.patch("/players/:id", { preHandler: requireAdminWrite }, async (request, reply) => {
+  const id = Number(request.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return reply.code(400).send({ error: "invalid id" });
+  }
+
+  const parsed = updatePlayerSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return reply.code(400).send({ error: parsed.error.flatten() });
+  }
+
+  const result = await query(
+    `
+    update players
+    set status = $2
+    where id = $1
+    returning id, gamertag, email, status, created_at
+    `,
+    [id, parsed.data.status]
+  );
+
+  if (result.rowCount === 0) {
+    return reply.code(404).send({ error: "player not found" });
   }
 
   return result.rows[0];
