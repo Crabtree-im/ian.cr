@@ -25,8 +25,9 @@ public final class MatchListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
+        Player killer = player.getKiller();
         String cause = player.getLastDamageCause() == null ? "unknown" : player.getLastDamageCause().getCause().name();
-        matchManager.consumeLife(player, cause);
+        matchManager.consumeLife(player, cause, killer != null ? killer.getName() : null);
     }
 
     @EventHandler
