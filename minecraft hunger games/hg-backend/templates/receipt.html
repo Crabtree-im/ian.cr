@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Submit Receipt — BTree Hunger Games{% endblock %}
+{% block content %}
+
+<div class="form-page">
+  <h1 class="page-title">Submit Patreon Receipt</h1>
+  <p class="page-sub">
+    After paying on Patreon, enter your gamertag, the unique receipt/transaction
+    code from your Patreon receipt, and a link to a screenshot as proof.
+    Each receipt code can only be used once.
+  </p>
+
+  {% if success %}
+  <div class="alert alert-success">
+    Receipt submitted for <strong>{{ success }}</strong>! An admin will verify your payment. You'll be notified on Discord once you're approved.
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="/receipt" class="form">
+    <div class="field">
+      <label class="label">Minecraft Gamertag <span class="required">*</span></label>
+      <input type="text" name="gamertag" required maxlength="32" placeholder="YourGamertag" class="input" />
+    </div>
+
+    <div class="field">
+      <label class="label">Event Code <span class="required">*</span></label>
+      <input type="text" name="event_code" required maxlength="64" placeholder="hg-event-001" class="input" />
+    </div>
+
+    <div class="field">
+      <label class="label">Patreon Receipt / Transaction Code <span class="required">*</span></label>
+      <p class="hint">This is the unique code on your Patreon receipt email. It can only be used once.</p>
+      <input type="text" name="receipt_code" required maxlength="128" placeholder="PAT-XXXXXXXXXXXXXXXX" class="input" />
+    </div>
+
+    <div class="field">
+      <label class="label">Screenshot URL <span class="required">*</span></label>
+      <p class="hint">Upload your receipt screenshot to Imgur (or similar) and paste the link here.</p>
+      <input type="url" name="screenshot_url" required placeholder="https://i.imgur.com/example.png" class="input" />
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">Submit Receipt</button>
+  </form>
+</div>
+
+{% endblock %}

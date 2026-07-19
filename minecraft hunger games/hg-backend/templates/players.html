@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Players — BTree Hunger Games{% endblock %}
+{% block content %}
+
+<div class="section">
+  <h1 class="page-title">Approved Players</h1>
+  <p class="page-sub">{{ players | length }} player{% if players | length != 1 %}s{% endif %} approved for the event.</p>
+
+  {% if players %}
+  <div class="player-grid">
+    {% for p in players %}
+    <div class="player-card">
+      <span class="player-tag">{{ p.gamertag }}</span>
+      <span class="player-badge">APPROVED</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-state">No approved players yet. Applications are still being reviewed.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

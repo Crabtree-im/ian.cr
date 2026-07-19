@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}BTree Hunger Games{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="nav-brand">&#9876; HG</span>
+      <div class="nav-links">
+        <a href="/"        class="nav-link {% if request.url.path == '/' %}active{% endif %}">Home</a>
+        <a href="/apply"   class="nav-link {% if request.url.path == '/apply' %}active{% endif %}">Apply</a>
+        <a href="/receipt" class="nav-link {% if request.url.path == '/receipt' %}active{% endif %}">Receipt</a>
+        <a href="/players" class="nav-link {% if request.url.path == '/players' %}active{% endif %}">Players</a>
+        <a href="/plugins" class="nav-link {% if request.url.path == '/plugins' %}active{% endif %}">Plugins</a>
+        <a href="/discord" class="nav-link {% if request.url.path == '/discord' %}active{% endif %}">Discord</a>
+        <a href="/contact" class="nav-link {% if request.url.path == '/contact' %}active{% endif %}">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    BTree Hunger Games &mdash; All rights reserved.
+  </footer>
+</body>
+</html>

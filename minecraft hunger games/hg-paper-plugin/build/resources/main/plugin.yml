@@ -1,0 +1,24 @@
+name: HungerGamesCore
+version: 0.1.0
+main: com.btree.hungergames.HungerGamesPlugin
+api-version: 1.21
+authors: [btree]
+description: Server-authoritative Hunger Games event plugin.
+commands:
+  hg:
+    description: Hunger Games admin command.
+    usage: /hg <startgames|stop|status|setlives|registerspawn|setfinale|assignspawns|previewspawns|exportspawns|givechest>
+    permission: hg.admin.status
+permissions:
+  hg.admin.start:
+    default: op
+  hg.admin.stop:
+    default: op
+  hg.admin.status:
+    default: op
+  hg.admin.setup:
+    default: op
+  hg.admin.moderate:
+    default: op
+  hg.admin.loot:
+    default: op

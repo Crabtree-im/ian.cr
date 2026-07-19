@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Apply — BTree Hunger Games{% endblock %}
+{% block content %}
+
+<div class="form-page">
+  <h1 class="page-title">Apply to Compete</h1>
+  <p class="page-sub">
+    Fill out the form below. Once your application is accepted you'll be
+    directed to pay via Patreon and then submit your receipt.
+  </p>
+
+  {% if success %}
+  <div class="alert alert-success">
+    Application submitted for <strong>{{ success }}</strong>! Admins will review your application. Keep an eye on Discord for updates.
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="/apply" class="form">
+    <div class="field">
+      <label class="label">Minecraft Gamertag <span class="required">*</span></label>
+      <input type="text" name="gamertag" required maxlength="32" placeholder="YourGamertag" class="input" />
+    </div>
+
+    <div class="field">
+      <label class="label">Email Address <span class="required">*</span></label>
+      <input type="email" name="email" required placeholder="you@example.com" class="input" />
+    </div>
+
+    <div class="field">
+      <label class="label">Event Code <span class="required">*</span></label>
+      <p class="hint">Get the event code from the Discord announcement.</p>
+      <input type="text" name="event_code" required maxlength="64" placeholder="hg-event-001" class="input" />
+    </div>
+
+    <div class="field">
+      <label class="label">Notes <span class="optional">(optional)</span></label>
+      <textarea name="notes" rows="3" maxlength="2000" placeholder="Anything you'd like admins to know..." class="input textarea"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-full">Submit Application</button>
+  </form>
+</div>
+
+{% endblock %}

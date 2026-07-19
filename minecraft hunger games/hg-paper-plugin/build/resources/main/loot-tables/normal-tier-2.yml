@@ -1,0 +1,22 @@
+tier: normal-2
+slot_range: [4, 7]
+items:
+  armor:
+    - { material: CHAINMAIL_HELMET, weight: 10, min: 1, max: 1 }
+    - { material: CHAINMAIL_CHESTPLATE, weight: 10, min: 1, max: 1 }
+    - { material: CHAINMAIL_LEGGINGS, weight: 10, min: 1, max: 1 }
+    - { material: CHAINMAIL_BOOTS, weight: 10, min: 1, max: 1 }
+    - { material: GOLDEN_HELMET, weight: 6, min: 1, max: 1 }
+  weapons_tools:
+    - { material: STONE_SWORD, weight: 10, min: 1, max: 1 }
+    - { material: IRON_AXE, weight: 7, min: 1, max: 1 }
+    - { material: STONE_PICKAXE, weight: 8, min: 1, max: 1 }
+    - { material: BOW, weight: 6, min: 1, max: 1 }
+    - { material: ARROW, weight: 9, min: 4, max: 10 }
+    - { material: SHIELD, weight: 6, min: 1, max: 1 }
+  food:
+    - { material: BREAD, weight: 10, min: 2, max: 10 }
+    - { material: CARROT, weight: 8, min: 2, max: 10 }
+    - { material: POTATO, weight: 8, min: 2, max: 10 }
+    - { material: SWEET_BERRIES, weight: 8, min: 2, max: 10 }
+    - { material: GLOW_BERRIES, weight: 8, min: 2, max: 10 }

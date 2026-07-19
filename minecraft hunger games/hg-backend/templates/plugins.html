@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Plugins — BTree Hunger Games{% endblock %}
+{% block content %}
+
+<div class="section">
+  <h1 class="page-title">Custom Plugins</h1>
+  <p class="page-sub">These plugins were built specifically for this event and run the gameplay you experience on the server.</p>
+
+  <div class="plugin-card">
+    <div class="plugin-header">
+      <span class="plugin-icon">&#9876;</span>
+      <div>
+        <h2 class="plugin-name">HungerGamesCore</h2>
+        <span class="plugin-version">v0.1.0 &mdash; Paper 1.21.1</span>
+      </div>
+    </div>
+    <p class="plugin-desc">
+      The server-authoritative Hunger Games plugin. Handles all gameplay logic: match state machine,
+      3-lives system, spawn assignment across 4 sections, chest loot randomization, and elimination flow.
+      Nothing is handled client-side — the plugin controls everything.
+    </p>
+    <ul class="plugin-features">
+      <li>Match states: idle &rarr; lobby-countdown &rarr; spawn-lock &rarr; live &rarr; finale &rarr; finished</li>
+      <li>3 lives per player — lose all 3 and you're kicked</li>
+      <li>4 arena sections: Red, Orange, Blue, Purple</li>
+      <li>Deterministic spawn assignment using seeded RNG</li>
+      <li>60-second spawn-lock countdown — move and die instantly</li>
+      <li>Tiered loot system: Normal chests (4 tiers) and Copper chests (3 tiers)</li>
+      <li>Admin commands: /hg startgames, /hg stop, /hg status, /hg setlives, and more</li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

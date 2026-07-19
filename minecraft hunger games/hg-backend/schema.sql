@@ -1,84 +1,54 @@
--- Hunger Games backend schema (PostgreSQL-flavored SQL)
+-- Hunger Games backend schema (MySQL 8.0+)
+-- Run via: python migrate.py
 
-create table if not exists players (
-    id bigserial primary key,
-    gamertag varchar(32) not null unique,
-    email varchar(255) not null unique,
-    status varchar(32) not null default 'applied',
-    created_at timestamptz not null default now()
+CREATE TABLE IF NOT EXISTS players (
+    id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    gamertag   VARCHAR(32)     NOT NULL,
+    email      VARCHAR(255)    NOT NULL,
+    status     VARCHAR(32)     NOT NULL DEFAULT 'applied',
+    created_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_gamertag (gamertag),
+    UNIQUE KEY uq_email    (email),
+    KEY        idx_status  (status)
 );
 
-create table if not exists events (
-    id bigserial primary key,
-    code varchar(64) not null unique,
-    name varchar(255) not null,
-    state varchar(32) not null default 'planned',
-    starts_at timestamptz,
-    created_at timestamptz not null default now()
+CREATE TABLE IF NOT EXISTS events (
+    id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    code       VARCHAR(64)     NOT NULL,
+    name       VARCHAR(255)    NOT NULL,
+    state      VARCHAR(32)     NOT NULL DEFAULT 'planned',
+    starts_at  DATETIME        NULL,
+    created_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_code (code)
 );
 
-create table if not exists applications (
-    id bigserial primary key,
-    player_id bigint not null references players(id) on delete cascade,
-    event_id bigint not null references events(id) on delete cascade,
-    state varchar(32) not null default 'pending',
-    source varchar(32) not null default 'discord',
-    notes text,
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    unique(player_id, event_id)
+CREATE TABLE IF NOT EXISTS applications (
+    id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    player_id  BIGINT UNSIGNED NOT NULL,
+    event_id   BIGINT UNSIGNED NOT NULL,
+    state      VARCHAR(32)     NOT NULL DEFAULT 'pending',
+    source     VARCHAR(32)     NOT NULL DEFAULT 'website',
+    notes      TEXT            NULL,
+    created_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_player_event (player_id, event_id),
+    KEY        idx_state       (state),
+    CONSTRAINT fk_app_player FOREIGN KEY (player_id) REFERENCES players (id) ON DELETE CASCADE,
+    CONSTRAINT fk_app_event  FOREIGN KEY (event_id)  REFERENCES events (id)  ON DELETE CASCADE
 );
 
-create table if not exists payments (
-    id bigserial primary key,
-    player_id bigint not null references players(id) on delete cascade,
-    event_id bigint not null references events(id) on delete cascade,
-    provider varchar(64) not null default 'patreon',
-    amount numeric(12, 2),
-    currency varchar(8),
-    status varchar(32) not null default 'pending',
-    evidence_url text,
-    evidence_type varchar(32) not null default 'screenshot',
-    verified_by varchar(64),
-    verified_at timestamptz,
-    created_at timestamptz not null default now()
+CREATE TABLE IF NOT EXISTS payments (
+    id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    player_id      BIGINT UNSIGNED NOT NULL,
+    event_id       BIGINT UNSIGNED NOT NULL,
+    receipt_code   VARCHAR(128)    NOT NULL,
+    screenshot_url TEXT            NOT NULL,
+    status         VARCHAR(32)     NOT NULL DEFAULT 'pending',
+    verified_by    VARCHAR(64)     NULL,
+    verified_at    DATETIME        NULL,
+    created_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_receipt_code (receipt_code),
+    KEY        idx_status      (status),
+    CONSTRAINT fk_pay_player FOREIGN KEY (player_id) REFERENCES players (id) ON DELETE CASCADE,
+    CONSTRAINT fk_pay_event  FOREIGN KEY (event_id)  REFERENCES events (id)  ON DELETE CASCADE
 );
-
-create table if not exists match_participants (
-    id bigserial primary key,
-    event_id bigint not null references events(id) on delete cascade,
-    player_id bigint not null references players(id) on delete cascade,
-    section_id varchar(32),
-    spawn_id varchar(64),
-    lives_start int not null default 3,
-    lives_remaining int not null default 3,
-    eliminated boolean not null default false,
-    created_at timestamptz not null default now(),
-    unique(event_id, player_id)
-);
-
-create table if not exists eliminations (
-    id bigserial primary key,
-    event_id bigint not null references events(id) on delete cascade,
-    player_id bigint not null references players(id) on delete cascade,
-    cause varchar(64) not null,
-    remaining_lives int not null,
-    eliminated boolean not null,
-    section_id varchar(32),
-    created_at timestamptz not null default now()
-);
-
-create table if not exists admin_actions (
-    id bigserial primary key,
-    admin_id varchar(64) not null,
-    action_type varchar(64) not null,
-    target_type varchar(64) not null,
-    target_id varchar(64) not null,
-    details_json jsonb,
-    created_at timestamptz not null default now()
-);
-
-create index if not exists idx_applications_state on applications(state);
-create index if not exists idx_payments_status on payments(status);
-create index if not exists idx_participants_event on match_participants(event_id);
-create index if not exists idx_eliminations_event on eliminations(event_id);

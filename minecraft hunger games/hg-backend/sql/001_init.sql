@@ -1,2 +1,0 @@
--- Initial schema migration placeholder.
--- Use `npm run migrate` to apply schema.sql directly.
